@@ -1,6 +1,6 @@
-package net.navatwo.adventofcode2021
+package net.navatwo.adventofcode2023
 
-import net.navatwo.adventofcode2021.framework.ComputedResult
+import net.navatwo.adventofcode2023.framework.ComputedResult
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.ObjectAssert
 import java.util.function.Consumer

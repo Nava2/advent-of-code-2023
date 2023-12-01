@@ -1,7 +1,7 @@
-package net.navatwo.adventofcode2021
+package net.navatwo.adventofcode2023
 
-import net.navatwo.adventofcode2021.benchmarks.Benchmark
-import net.navatwo.adventofcode2021.day1.Day1Solution
+import net.navatwo.adventofcode2023.benchmarks.Benchmark
+import net.navatwo.adventofcode2023.day1.Day1Solution
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 
@@ -11,7 +11,7 @@ class Day1SolutionTest {
         val resourceName = "day1/p1_sample.txt"
         val solution = Day1Solution.Part1
         val input = solution.parseResource(resourceName)
-        assertThat(Day1Solution.Part1.solve(input)).isComputed(7)
+        assertThat(Day1Solution.Part1.solve(input)).isComputed(142L)
     }
 
     @Test
@@ -19,20 +19,20 @@ class Day1SolutionTest {
         val resourceName = "day1/p1_input.txt"
         val solution = Day1Solution.Part1
         val input = solution.parseResource(resourceName)
-        assertThat(Day1Solution.Part1.solve(input)).isComputed(1681)
+        assertThat(Day1Solution.Part1.solve(input)).isComputed(55002L)
 
         Benchmark.run(
-            inputContent = loadLines(resourceName),
+            inputContent = loadText(resourceName),
             solution = solution,
         )
     }
 
     @Test
     fun `p2 sample`() {
-        val resourceName = "day1/p1_sample.txt"
+        val resourceName = "day1/p2_sample.txt"
         val solution = Day1Solution.Part2
         val input = solution.parseResource(resourceName)
-        assertThat(Day1Solution.Part2.solve(input)).isComputed(5)
+        assertThat(Day1Solution.Part2.solve(input)).isComputed(281)
     }
 
     @Test
@@ -40,10 +40,10 @@ class Day1SolutionTest {
         val resourceName = "day1/p1_input.txt"
         val solution = Day1Solution.Part2
         val input = solution.parseResource(resourceName)
-        assertThat(Day1Solution.Part2.solve(input)).isComputed(1704L)
+        assertThat(Day1Solution.Part2.solve(input)).isComputed(55093L)
 
         Benchmark.run(
-            inputContent = loadLines(resourceName),
+            inputContent = loadText(resourceName),
             solution = solution,
         )
     }

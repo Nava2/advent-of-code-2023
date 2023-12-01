@@ -1,4 +1,4 @@
-package net.navatwo.adventofcode2021
+package net.navatwo.adventofcode2023
 
 inline fun <T, R> Iterable<T>.mapToSet(transform: (T) -> R): Set<R> {
     return mapTo(mutableSetOf(), transform)

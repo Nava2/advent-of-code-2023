@@ -1,4 +1,4 @@
-package net.navatwo.adventofcode2021.framework
+package net.navatwo.adventofcode2023.framework
 
 interface ComputedResult {
     val computed: Long

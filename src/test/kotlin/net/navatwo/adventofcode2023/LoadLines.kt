@@ -1,19 +1,19 @@
-package net.navatwo.adventofcode2021
+package net.navatwo.adventofcode2023
 
-import net.navatwo.adventofcode2021.framework.Solution
+import net.navatwo.adventofcode2023.framework.Solution
 
-private val loadedLines: MutableMap<String, List<String>> = mutableMapOf()
+private val loadedLines: MutableMap<String, String> = mutableMapOf()
 
-fun loadLines(resourceName: String): List<String> {
+fun loadText(resourceName: String): String {
     return loadedLines.computeIfAbsent(resourceName) {
         ClassLoader.getSystemClassLoader().getResourceAsStream(resourceName)!!.use { resourceStream ->
             resourceStream.bufferedReader().use { reader ->
-                reader.lineSequence().toList()
+                reader.readText().trim()
             }
         }
     }
 }
 
 fun <I> Solution<I>.parseResource(resourceName: String): I {
-    return parse(loadLines(resourceName))
+    return parse(loadText(resourceName).lineSequence())
 }

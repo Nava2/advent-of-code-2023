@@ -1,22 +1,22 @@
-package net.navatwo.adventofcode2021.benchmarks
+package net.navatwo.adventofcode2023.benchmarks
 
-import net.navatwo.adventofcode2021.framework.Solution
+import net.navatwo.adventofcode2023.framework.Solution
 import kotlin.system.measureTimeMillis
 import kotlin.time.Duration
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class Benchmark<I> private constructor(
-    private val inputContent: List<String>,
+    private val inputContent: String,
     private val solution: Solution<I>,
     private val inputConfig: Config?,
     private val solveConfig: Config,
 ) {
-    private val inputs = solution.parse(inputContent)
+    private val inputs = solution.parse(inputContent.lineSequence())
 
     fun run() {
         inputConfig?.runBenchmark {
-            solution.parse(inputContent)
+            solution.parse(inputContent.lineSequence())
         }
 
         solveConfig.runBenchmark {
@@ -26,7 +26,7 @@ class Benchmark<I> private constructor(
 
     companion object {
         fun <I> run(
-            inputContent: List<String>,
+            inputContent: String,
             solution: Solution<I>,
             inputConfig: Config? = Stage.INPUT.config(warmupIterations = 2000U, iterations = 10_000U),
             solveConfig: Config = Stage.SOLVE.config(warmupIterations = 2000U, iterations = 25_000U),
