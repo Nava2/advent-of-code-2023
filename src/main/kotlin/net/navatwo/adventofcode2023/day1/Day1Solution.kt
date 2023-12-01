@@ -32,11 +32,11 @@ sealed class Day1Solution : Solution<List<Day1Solution.CalibrationLine>> {
 
     private fun parse(line: String): Int {
       val mostSig = (0..line.lastIndex)
-        .firstNotNullOf {  i ->
+        .firstNotNullOf { i ->
           tryParseChar(line, i)
         }
       val leastSig = (line.lastIndex downTo 0)
-        .firstNotNullOf {  i ->
+        .firstNotNullOf { i ->
           tryParseChar(line, i)
         }
 
@@ -101,6 +101,6 @@ private fun tryParseChar(line: String, index: Int): Int? {
   val char = line[index]
   if (char.isDigit()) return char.digitToInt()
 
-    val numberValue = line.subSequence(index, minOf(index + maxNumberSize, line.length))
-    return numberTrie.find(numberValue)
+  val numberValue = line.subSequence(index, minOf(index + maxNumberSize, line.length))
+  return numberTrie.find(numberValue)
 }
