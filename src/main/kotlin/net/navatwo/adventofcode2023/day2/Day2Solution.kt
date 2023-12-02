@@ -6,7 +6,22 @@ import net.navatwo.adventofcode2023.framework.Solution
 sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
   data object Part1 : Day2Solution() {
     override fun solve(input: List<Game>): ComputedResult {
-      return ComputedResult.Simple(4)
+      // which games are possible with 12 red cubes, 13 green cubes, and 14 blue cubes
+
+      val validGames = input.asSequence()
+        .filter { game ->
+          game.pulls.all { pull ->
+            pull.pulls.all { (colour, count) ->
+              when (colour) {
+                Game.Colour.Red -> count <= 12
+                Game.Colour.Green -> count <= 13
+                Game.Colour.Blue -> count <= 14
+              }
+            }
+          }
+        }
+
+      return ComputedResult.Simple(validGames.sumOf { it.id })
     }
   }
 
@@ -15,7 +30,7 @@ sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
     return lines
       .map { line ->
         val (gamePreamble, pullValues) = line.split(':', limit = 2)
-        val gameId = gamePreamble.slice("Game ".length..< gamePreamble.length).toInt()
+        val gameId = gamePreamble.slice("Game ".length..<gamePreamble.length).toInt()
         val pulls = pullValues.splitToSequence(';')
           .map(Game.Pull::parse)
           .toList()
