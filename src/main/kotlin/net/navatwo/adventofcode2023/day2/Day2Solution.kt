@@ -25,6 +25,29 @@ sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
     }
   }
 
+  data object Part2 : Day2Solution() {
+    override fun solve(input: List<Game>): ComputedResult {
+      // what is the fewest number of cubes required for the game to be playable
+      // this is the maximum number of cubes of each colour in any pull
+
+      val cubesPerGame = input.asSequence()
+        .map { game ->
+          val maxValues = mutableMapOf<Game.Colour, Int>()
+          for ((colour, count) in game.pulls.asSequence()
+            .flatMap { it.pulls.asSequence() }) {
+            maxValues.compute(colour) { _, current ->
+              current?.coerceAtLeast(count) ?: count
+            }
+          }
+          maxValues.values
+        }
+
+      val gamePowers = cubesPerGame.map { cubes -> cubes.fold(1, Int::times) }
+
+      return ComputedResult.Simple(gamePowers.sum())
+    }
+  }
+
 
   override fun parse(lines: Sequence<String>): List<Game> {
     return lines
