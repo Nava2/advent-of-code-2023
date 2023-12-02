@@ -3,104 +3,67 @@ package net.navatwo.adventofcode2023.day2
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
 
-sealed class Day2Solution : Solution<List<Day2Solution.CalibrationLine>> {
+sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
   data object Part1 : Day2Solution() {
-    override fun solve(input: List<CalibrationLine>): ComputedResult {
-      return ComputedResult.Simple(input.sumOf { parse(it.line) })
+    override fun solve(input: List<Game>): ComputedResult {
+      return ComputedResult.Simple(4)
     }
+  }
 
-    private fun parse(line: String): Int {
-      val mostSig = (0..line.lastIndex)
-        .firstNotNullOf { i ->
-          val ch = line[i]
-          if (ch.isDigit()) ch.digitToInt() else null
+
+  override fun parse(lines: Sequence<String>): List<Game> {
+    return lines
+      .map { line ->
+        val (gamePreamble, pullValues) = line.split(':', limit = 2)
+        val gameId = gamePreamble.slice("Game ".length..< gamePreamble.length).toInt()
+        val pulls = pullValues.splitToSequence(';')
+          .map(Game.Pull::parse)
+          .toList()
+
+        Game(gameId, pulls)
+      }
+      .toList()
+  }
+
+  data class Game(
+    val id: Int,
+    val pulls: List<Pull>,
+  ) {
+    @JvmInline
+    value class Pull(
+      val pulls: Map<Colour, Int>,
+    ) {
+      companion object {
+        fun parse(input: String): Pull {
+          val pullMap = input.splitToSequence(',')
+            .map { it.trim() }
+            .filter { it.isNotEmpty() }
+            .map { hand ->
+              val (count, colour) = hand.split(' ', limit = 2)
+              Colour.valueOfLowered(colour) to count.toInt()
+            }
+            .toMap()
+
+          return Pull(pullMap)
         }
-      val leastSig = (line.lastIndex downTo 0)
-        .firstNotNullOf { i ->
-          val ch = line[i]
-          if (ch.isDigit()) ch.digitToInt() else null
+      }
+    }
+
+    enum class Colour {
+      Red,
+      Green,
+      Blue,
+      ;
+
+      val lowered: String = name.lowercase()
+
+      companion object {
+        private val loweredValues = entries.associateBy { it.lowered }
+
+        fun valueOfLowered(name: String): Colour {
+          return loweredValues.getValue(name)
         }
-
-      return mostSig * 10 + leastSig
+      }
     }
   }
-
-  data object Part2 : Day2Solution() {
-    override fun solve(input: List<CalibrationLine>): ComputedResult {
-      return ComputedResult.Simple(input.sumOf { parse(it.line) })
-    }
-
-    private fun parse(line: String): Int {
-      val mostSig = (0..line.lastIndex)
-        .firstNotNullOf { i ->
-          tryParseChar(line, i)
-        }
-      val leastSig = (line.lastIndex downTo 0)
-        .firstNotNullOf { i ->
-          tryParseChar(line, i)
-        }
-
-      return mostSig * 10 + leastSig
-    }
-  }
-
-  override fun parse(lines: Sequence<String>): List<CalibrationLine> {
-    return lines.map { CalibrationLine(it) }.toList()
-  }
-
-  @JvmInline
-  value class CalibrationLine(val line: String)
-}
-
-private data class Node(
-  var value: Int? = null,
-  val children: MutableMap<Char, Node> = mutableMapOf(),
-) {
-  fun find(input: CharSequence): Int? {
-    var node: Node = this
-    for (c in input) {
-      node = node.children[c] ?: return null
-
-      if (node.value != null) return node.value
-    }
-    return node.value
-  }
-}
-
-
-private val numbers = mapOf(
-  "one" to 1,
-  "two" to 2,
-  "three" to 3,
-  "four" to 4,
-  "five" to 5,
-  "six" to 6,
-  "seven" to 7,
-  "eight" to 8,
-  "nine" to 9,
-)
-
-private val maxNumberSize = numbers.keys.maxOf { it.length }
-
-private fun buildTrie(): Node {
-  val rootNode = Node()
-  for ((word, value) in numbers) {
-    var node = rootNode
-    for (c in word) {
-      node = node.children.getOrPut(c) { Node() }
-    }
-    node.value = value
-  }
-
-  return rootNode
-}
-
-private val numberTrie = buildTrie()
-
-private fun tryParseChar(line: String, index: Int): Int? {
-  val char = line[index]
-  if (char.isDigit()) return char.digitToInt()
-
-  val numberValue = line.subSequence(index, minOf(index + maxNumberSize, line.length))
-  return numberTrie.find(numberValue)
 }
