@@ -2,7 +2,16 @@
 
 package net.navatwo.adventofcode2023
 
-data class Coord(val x: Int, val y: Int)
+data class Coord(val x: Int, val y: Int) {
+  fun neighbours(distance: Int = 1): Sequence<Coord> {
+    return (y - distance .. y + distance).asSequence()
+      .flatMap { y ->
+        (x - distance .. x + distance).asSequence()
+          .map { x -> Coord(x, y) }
+      }
+      .filter { it != this }
+  }
+}
 
 fun List<List<*>>.coords(): Sequence<Coord> {
   val columnIndices = first().indices
