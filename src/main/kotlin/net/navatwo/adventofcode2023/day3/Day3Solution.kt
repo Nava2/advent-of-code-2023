@@ -1,10 +1,10 @@
-package net.navatwo.adventofcode2023.day2
+package net.navatwo.adventofcode2023.day3
 
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
 
-sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
-  data object Part1 : Day2Solution() {
+sealed class Day3Solution : Solution<List<Day3Solution.Game>> {
+  data object Part1 : Day3Solution() {
     override fun solve(input: List<Game>): ComputedResult {
       // which games are possible with 12 red cubes, 13 green cubes, and 14 blue cubes
 
@@ -25,7 +25,7 @@ sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
     }
   }
 
-  data object Part2 : Day2Solution() {
+  data object Part2 : Day3Solution() {
     override fun solve(input: List<Game>): ComputedResult {
       // what is the fewest number of cubes required for the game to be playable
       // this is the maximum number of cubes of each colour in any pull

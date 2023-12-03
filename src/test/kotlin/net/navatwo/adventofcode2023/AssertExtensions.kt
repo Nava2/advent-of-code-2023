@@ -6,9 +6,9 @@ import org.assertj.core.api.ObjectAssert
 import java.util.function.Consumer
 
 fun <ACTUAL : ComputedResult> ObjectAssert<ACTUAL>.isComputed(computed: Long): ObjectAssert<ACTUAL> {
-    return satisfies(
-        Consumer { v ->
-            assertThat(v.computed).isEqualTo(computed)
-        }
-    )
+  return satisfies(
+    Consumer { v ->
+      assertThat(v.computed).isEqualTo(computed)
+    }
+  )
 }

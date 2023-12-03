@@ -7,91 +7,91 @@ import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
 class Benchmark<I> private constructor(
-    private val inputContent: String,
-    private val solution: Solution<I>,
-    private val inputConfig: Config?,
-    private val solveConfig: Config,
+  private val inputContent: String,
+  private val solution: Solution<I>,
+  private val inputConfig: Config?,
+  private val solveConfig: Config,
 ) {
-    private val inputs = solution.parse(inputContent.lineSequence())
+  private val inputs = solution.parse(inputContent.lineSequence())
 
-    fun run() {
-        inputConfig?.runBenchmark {
-            solution.parse(inputContent.lineSequence())
-        }
-
-        solveConfig.runBenchmark {
-            solution.solve(inputs)
-        }
+  fun run() {
+    inputConfig?.runBenchmark {
+      solution.parse(inputContent.lineSequence())
     }
 
-    companion object {
-        fun <I> run(
-            inputContent: String,
-            solution: Solution<I>,
-            inputConfig: Config? = Stage.INPUT.config(warmupIterations = 2000U, iterations = 10_000U),
-            solveConfig: Config = Stage.SOLVE.config(warmupIterations = 2000U, iterations = 25_000U),
-        ) {
-            val benchmark = Benchmark(
-                inputContent = inputContent,
-                solution = solution,
-                inputConfig = inputConfig,
-                solveConfig = solveConfig,
-            )
-
-            benchmark.run()
-        }
+    solveConfig.runBenchmark {
+      solution.solve(inputs)
     }
+  }
 
-    enum class Stage {
-        INPUT,
-        SOLVE,
-        ;
+  companion object {
+    fun <I> run(
+      inputContent: String,
+      solution: Solution<I>,
+      inputConfig: Config? = Stage.INPUT.config(warmupIterations = 2000U, iterations = 10_000U),
+      solveConfig: Config = Stage.SOLVE.config(warmupIterations = 2000U, iterations = 25_000U),
+    ) {
+      val benchmark = Benchmark(
+        inputContent = inputContent,
+        solution = solution,
+        inputConfig = inputConfig,
+        solveConfig = solveConfig,
+      )
 
-        fun config(warmupIterations: UInt, iterations: UInt): Config = Config(
-            stage = this,
-            warmupIterations = warmupIterations.toInt(),
-            iterations = iterations.toInt(),
-        )
+      benchmark.run()
     }
+  }
 
-    data class Config internal constructor(
-        val stage: Stage,
-        val warmupIterations: Int,
-        val iterations: Int,
+  enum class Stage {
+    INPUT,
+    SOLVE,
+    ;
+
+    fun config(warmupIterations: UInt, iterations: UInt): Config = Config(
+      stage = this,
+      warmupIterations = warmupIterations.toInt(),
+      iterations = iterations.toInt(),
     )
+  }
 
-    class Result(
-        val stage: Stage,
-        val totalDuration: Duration,
-        val operationDuration: Duration,
-        val iterations: Int,
-    )
+  data class Config internal constructor(
+    val stage: Stage,
+    val warmupIterations: Int,
+    val iterations: Int,
+  )
+
+  class Result(
+    val stage: Stage,
+    val totalDuration: Duration,
+    val operationDuration: Duration,
+    val iterations: Int,
+  )
 }
 
 private inline fun Benchmark.Config.runBenchmark(operation: () -> Unit): Benchmark.Result {
-    println("[$stage] Warming up [$warmupIterations ops]")
-    val warmupTime = measureTimeMillis {
-        repeat(warmupIterations) {
-            operation()
-        }
-    }.toDuration(DurationUnit.MILLISECONDS)
+  println("[$stage] Warming up [$warmupIterations ops]")
+  val warmupTime = measureTimeMillis {
+    repeat(warmupIterations) {
+      operation()
+    }
+  }.toDuration(DurationUnit.MILLISECONDS)
 
-    println("[$stage] Completed [$warmupTime, ${warmupTime / warmupIterations.toDouble()}/op]")
+  println("[$stage] Completed [$warmupTime, ${warmupTime / warmupIterations.toDouble()}/op]")
 
-    println("[$stage] Running [$iterations ops]")
-    val solveTime = measureTimeMillis {
-        repeat(iterations) {
-            operation()
-        }
-    }.toDuration(DurationUnit.MILLISECONDS)
+  println("[$stage] Running [$iterations ops]")
+  val solveTime = measureTimeMillis {
+    repeat(iterations) {
+      operation()
+    }
+  }.toDuration(DurationUnit.MILLISECONDS)
 
-    val operationTime = solveTime / iterations.toDouble()
-    println("[$stage] Completed operations [$solveTime, $operationTime/op]")
+  val operationTime = solveTime / iterations.toDouble()
+  println("[$stage] Completed operations [$solveTime, $operationTime/op]")
 
-    return Benchmark.Result(
-        stage = stage,
-        totalDuration = solveTime,
-        operationDuration = operationTime,
-        iterations = iterations,
-    )
+  return Benchmark.Result(
+    stage = stage,
+    totalDuration = solveTime,
+    operationDuration = operationTime,
+    iterations = iterations,
+  )
 }
