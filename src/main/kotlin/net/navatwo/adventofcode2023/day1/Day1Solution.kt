@@ -59,14 +59,20 @@ private data class Node(
   fun find(input: CharSequence): Int? {
     var node: Node = this
     for (c in input) {
-      node = node.children[c] ?: return null
+      val nextNode = node.children[c]
 
-      if (node.value != null) return node.value
+      // null node => no child
+      // non-null node with value => found a word
+      if (nextNode == null || nextNode.value != null) {
+        return nextNode?.value
+      }
+
+      node = nextNode
     }
+
     return node.value
   }
 }
-
 
 private val numbers = mapOf(
   "one" to 1,

@@ -48,7 +48,6 @@ sealed class Day2Solution : Solution<List<Day2Solution.Game>> {
     }
   }
 
-
   override fun parse(lines: Sequence<String>): List<Game> {
     return lines
       .map { line ->

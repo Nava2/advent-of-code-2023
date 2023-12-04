@@ -1,23 +1,32 @@
 plugins {
-    kotlin("jvm") version "2.0.0-Beta1"
+  kotlin("jvm") version "2.0.0-Beta1"
+  id("io.gitlab.arturbosch.detekt") version "1.23.4"
 }
 
 group = "net.navatwo"
 version = "2023"
 
 repositories {
-    mavenCentral()
+  mavenCentral()
+}
+
+detekt {
+  config.from("detekt.yml")
+  autoCorrect = true
+  buildUponDefaultConfig = true
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+  detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:1.23.4")
 
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+  implementation(kotlin("stdlib"))
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
-    testImplementation("org.assertj:assertj-core:3.21.0")
+  testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.2")
+
+  testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.2")
+  testImplementation("org.assertj:assertj-core:3.21.0")
 }
 
 tasks.test {
-    useJUnitPlatform()
+  useJUnitPlatform()
 }
