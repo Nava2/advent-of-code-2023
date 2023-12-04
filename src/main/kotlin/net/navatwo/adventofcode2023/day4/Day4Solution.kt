@@ -9,9 +9,7 @@ sealed class Day4Solution : Solution<List<Day4Solution.Card>> {
       var result = 0L
 
       for (card in input) {
-        val winningNumbersMatched = card.winningNumbers.count {
-          it in card.playableNumbers
-        }
+        val winningNumbersMatched = card.computeWinningNumbers()
 
         if (winningNumbersMatched >= 1) {
           // 2^N
@@ -19,6 +17,27 @@ sealed class Day4Solution : Solution<List<Day4Solution.Card>> {
           result += score
         }
       }
+
+      return ComputedResult.Simple(result)
+    }
+  }
+
+  data object Part2 : Day4Solution() {
+    override fun solve(input: List<Card>): ComputedResult {
+      val winningNumbersPerCard = input.associateWith { it.computeWinningNumbers() }
+
+      // do a DFS of the winning cards
+      // compute the number of winning cards in reverse order, then sum them up
+
+      val winningCardsPerId = input.associateTo(HashMap(input.size)) { it.id to 1L }
+      for (card in input.reversed()) {
+        val winningNumbers = winningNumbersPerCard.getValue(card)
+        winningCardsPerId.computeIfPresent(card.id) { id, value ->
+          value + (1..winningNumbers).sumOf { winningCardsPerId.getValue(it + id) }
+        }
+      }
+
+      val result = winningCardsPerId.values.sum()
 
       return ComputedResult.Simple(result)
     }
@@ -56,5 +75,7 @@ sealed class Day4Solution : Solution<List<Day4Solution.Card>> {
     val id: Int,
     val winningNumbers: Set<Int>,
     val playableNumbers: Set<Int>,
-  )
+  ) {
+    fun computeWinningNumbers(): Int = winningNumbers.count { it in playableNumbers }
+  }
 }
