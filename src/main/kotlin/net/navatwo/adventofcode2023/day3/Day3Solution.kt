@@ -22,7 +22,6 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
       )
     }
 
-
     fun solve(): Long {
       var result = 0L
 
@@ -288,7 +287,6 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
     }
   }
 
-
   override fun parse(lines: Sequence<String>): EngineSchematic {
     val grid = lines
       .map { line ->
@@ -306,7 +304,6 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
     operator fun get(coord: Coord): Value = grid[coord]
     fun getOrNull(coord: Coord): Value? = grid.getOrNull(coord)
     fun getOrNull(x: Int, y: Int): Value? = grid.getOrNull(x, y)
-
 
     @JvmInline
     value class Value(val char: Char)

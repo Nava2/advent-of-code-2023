@@ -3,60 +3,13 @@
 package net.navatwo.adventofcode2023
 
 data class Coord(val x: Int, val y: Int) {
-  fun neighbours(distance: Int = 1): Sequence<Coord> {
-    return (y - distance .. y + distance).asSequence()
-      .flatMap { y ->
-        (x - distance .. x + distance).asSequence()
-          .map { x -> Coord(x, y) }
-      }
-      .filter { it != this }
-  }
-
   inline fun forEachNeighbour(distance: Int = 1, consumer: (x: Int, y: Int) -> Unit) {
-    for (y in y - distance .. y + distance) {
-      for (x in x - distance .. x + distance) {
+    for (y in y - distance..y + distance) {
+      for (x in x - distance..x + distance) {
         if (x == this.x && y == this.y) continue
         consumer(x, y)
       }
     }
-  }
-}
-
-fun List<List<*>>.coords(): Sequence<Coord> {
-  val columnIndices = first().indices
-  return indices.asSequence()
-    .flatMap { y ->
-      columnIndices.map { x -> Coord(x, y) }
-    }
-}
-
-@JvmInline
-value class Grid<T>(private val grid: MutableList<MutableList<T>>) {
-  val rows: List<List<T>> get() = grid
-
-  val rowCount get() = grid.size
-
-  operator fun get(coord: Coord): T = grid[coord]
-  operator fun get(x: Int, y: Int): T = grid[y][x]
-
-  fun getOrNull(coord: Coord): T? = grid.getOrNull(coord)
-  fun getOrNull(x: Int, y: Int): T? = grid.getOrNull(y)?.getOrNull(x)
-
-  inline fun forEachCoord(block: (x: Int, y: Int) -> Unit) {
-    val rows = rows
-    for (y in rows.indices) {
-      for (x in rows[y].indices) {
-        block(x, y)
-      }
-    }
-  }
-
-  operator fun set(coord: Coord, value: T) {
-    grid[coord] = value
-  }
-
-  operator fun set(x: Int, y: Int, value: T) {
-    grid[y][x] = value
   }
 }
 
@@ -102,17 +55,4 @@ operator fun Array<LongArray>.set(coord: Coord, value: Long) {
 
 operator fun Array<IntArray>.set(coord: Coord, value: Int) {
   this[coord.y][coord.x] = value
-}
-
-fun <T> List<List<T>>.initializeVisitedGrid(): Array<BooleanArray> {
-  val columnCount = first().size
-  return Array(size) { BooleanArray(columnCount) }
-}
-
-fun Array<BooleanArray>.resetVisited() {
-  for (arr in this) {
-    for (c in arr.indices) {
-      arr[c] = false
-    }
-  }
 }

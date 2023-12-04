@@ -12,6 +12,7 @@ repositories {
 
 detekt {
   config.from("detekt.yml")
+  autoCorrect = true
   buildUponDefaultConfig = true
 }
 
