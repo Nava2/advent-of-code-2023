@@ -11,6 +11,15 @@ data class Coord(val x: Int, val y: Int) {
       }
       .filter { it != this }
   }
+
+  fun forEachNeighbour(distance: Int = 1, consumer: (x: Int, y: Int) -> Unit) {
+    for (y in y - distance .. y + distance) {
+      for (x in x - distance .. x + distance) {
+        if (x == this.x && y == this.y) continue
+        consumer(x, y)
+      }
+    }
+  }
 }
 
 fun List<List<*>>.coords(): Sequence<Coord> {
@@ -19,6 +28,20 @@ fun List<List<*>>.coords(): Sequence<Coord> {
     .flatMap { y ->
       columnIndices.map { x -> Coord(x, y) }
     }
+}
+
+@JvmInline
+value class Grid<T>(private val grid: MutableList<MutableList<T>>) {
+  operator fun get(coord: Coord): T = grid[coord]
+  operator fun get(x: Int, y: Int): T = grid[y][x]
+
+  operator fun set(coord: Coord, value: T) {
+    grid[coord] = value
+  }
+
+  operator fun set(x: Int, y: Int, value: T) {
+    grid[y][x] = value
+  }
 }
 
 fun <T> List<List<T>>.getCoord(x: Int, y: Int): T? {
