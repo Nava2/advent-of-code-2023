@@ -2,11 +2,8 @@ package net.navatwo.adventofcode2023.day3
 
 import net.navatwo.adventofcode2023.Coord
 import net.navatwo.adventofcode2023.Grid
-import net.navatwo.adventofcode2023.coords
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
-import net.navatwo.adventofcode2023.get
-import net.navatwo.adventofcode2023.getOrNull
 
 sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
   abstract class SolveContext<DP_COORD : Any>(
@@ -19,7 +16,7 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
     // Lazy due to needing uninitialized, etc.
     protected val dp: Grid<DP_COORD> by lazy(LazyThreadSafetyMode.NONE) {
       Grid(
-        grid = schematic.grid.mapTo(ArrayList(schematic.grid.size)) { row ->
+        grid = schematic.grid.rows.mapTo(ArrayList(schematic.grid.rowCount)) { row ->
           row.mapTo(ArrayList(row.size)) { uninitialized }
         },
       )
@@ -29,8 +26,8 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
     fun solve(): Long {
       var result = 0L
 
-      for (coord in schematic.grid.coords()) {
-        result += visitCoord(coord)
+      schematic.grid.forEachCoord { x, y ->
+        result += visitCoord(Coord(x, y))
       }
 
       return result
@@ -68,7 +65,7 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
 
     protected fun initializeNeighbours(coord: Coord) {
       coord.forEachNeighbour { x, y ->
-        if (dp[x, y] is Part2.DPCoord.Uninitialized) {
+        if (dp[x, y] == uninitialized) {
           val neighbourCoord = Coord(x, y)
           initialize(neighbourCoord)
         }
@@ -106,8 +103,9 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
 
       val lastPartNumberCoord = Coord(searchCoordX - 1, searchCoordY)
 
+      val foundPartNumber = partNumber(partNumber, firstPartNumberCoord, lastPartNumberCoord)
       for (x in firstPartNumberCoord.x..lastPartNumberCoord.x) {
-        dp[x, searchCoordY] = partNumber(partNumber, firstPartNumberCoord, lastPartNumberCoord)
+        dp[x, searchCoordY] = foundPartNumber
       }
     }
   }
@@ -294,20 +292,21 @@ sealed class Day3Solution : Solution<Day3Solution.EngineSchematic> {
   override fun parse(lines: Sequence<String>): EngineSchematic {
     val grid = lines
       .map { line ->
-        line.map { EngineSchematic.Value(it) }
+        line.mapTo(mutableListOf()) { EngineSchematic.Value(it) }
       }
-      .toList()
+      .toMutableList()
 
-    return EngineSchematic(grid)
+    return EngineSchematic(Grid(grid))
   }
 
   @JvmInline
   value class EngineSchematic(
-    val grid: List<List<Value>>
+    val grid: Grid<Value>
   ) {
     operator fun get(coord: Coord): Value = grid[coord]
     fun getOrNull(coord: Coord): Value? = grid.getOrNull(coord)
-    fun getOrNull(x: Int, y: Int): Value? = grid.getOrNull(y)?.getOrNull(x)
+    fun getOrNull(x: Int, y: Int): Value? = grid.getOrNull(x, y)
+
 
     @JvmInline
     value class Value(val char: Char)

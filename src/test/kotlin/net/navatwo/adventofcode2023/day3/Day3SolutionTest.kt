@@ -3,7 +3,6 @@ package net.navatwo.adventofcode2023.day3
 import net.navatwo.adventofcode2023.Coord
 import net.navatwo.adventofcode2023.benchmarks.Benchmark
 import net.navatwo.adventofcode2023.day3.Day3Solution.EngineSchematic
-import net.navatwo.adventofcode2023.get
 import net.navatwo.adventofcode2023.isComputed
 import net.navatwo.adventofcode2023.loadText
 import net.navatwo.adventofcode2023.parseResource
@@ -16,8 +15,8 @@ class Day3SolutionTest {
     val resourceName = "day3/p1_sample.txt"
     val solution = Day3Solution.Part1
     val schematic = solution.parseResource(resourceName)
-    assertThat(schematic.grid).hasSize(10)
-      .allSatisfy { assertThat(it).hasSize(10) }
+    assertThat(schematic.grid.rowCount).isEqualTo(10)
+    assertThat(schematic.grid.rows).allSatisfy { assertThat(it).hasSize(10) }
 
     assertThat(schematic.grid[Coord(0, 0)])
       .isEqualTo(EngineSchematic.Value('4'))
