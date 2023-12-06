@@ -17,7 +17,7 @@ class Day5SolutionTest {
       Almanac.Seed(55),
       Almanac.Seed(13),
     )
-    assertThat(almanac.entriesBySourceType).hasSize(7)
+    assertThat(almanac.mappingsBySourceType).hasSize(7)
       .containsOnlyKeys(
         Almanac.Type.Seed,
         Almanac.Type.Soil,
@@ -27,26 +27,52 @@ class Day5SolutionTest {
         Almanac.Type.Temperature,
         Almanac.Type.Humidity
       )
-      .satisfies { entries ->
-        assertThat(entries)
+      .satisfies { mappings ->
+        assertThat(mappings)
           .containsEntry(
             Almanac.Type.Water,
-            listOf(
-              Almanac.Entry(
-                sourceType = Almanac.Type.Water,
-                sourceRange = 18..25,
-                destType = Almanac.Type.Light,
-                destRange = 88..95,
-              ),
-              Almanac.Entry(
-                sourceType = Almanac.Type.Water,
-                sourceRange = 25..95,
-                destType = Almanac.Type.Light,
-                destRange = 18..88,
-              ),
+            Almanac.Mapping(
+              sourceType = Almanac.Type.Water,
+              destType = Almanac.Type.Light,
+              entries = listOf(
+                Almanac.Entry(
+                  sourceRange = 18L..25,
+                  destRange = 88L..95,
+                ),
+                Almanac.Entry(
+                  sourceRange = 25L..95,
+                  destRange = 18L..88,
+                ),
+              )
             )
           )
       }
+  }
+
+  @Test
+  fun `verify mapping behaviour`() {
+    val mapping = Almanac.Mapping(
+      sourceType = Almanac.Type.Water,
+      destType = Almanac.Type.Light,
+      entries = listOf(
+        Almanac.Entry(
+          sourceRange = 18L..25,
+          destRange = 88L..95,
+        ),
+        Almanac.Entry(
+          sourceRange = 25L..95,
+          destRange = 18L..88,
+        ),
+      )
+    )
+
+    assertThat(mapping.map(0L)).isEqualTo(0L)
+    assertThat(mapping.map(1L)).isEqualTo(1L)
+    assertThat(mapping.map(18L)).isEqualTo(88L)
+    assertThat(mapping.map(25L)).isEqualTo(95L)
+    assertThat(mapping.map(26L)).isEqualTo(19L)
+    assertThat(mapping.map(95L)).isEqualTo(88L)
+    assertThat(mapping.map(96L)).isEqualTo(96L)
   }
 
 //  @Test

@@ -1,7 +1,10 @@
 package net.navatwo.adventofcode2023.day5
 
+import com.github.nava2.interval_tree.Interval
+import com.github.nava2.interval_tree.IntervalTree
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
+import java.util.Objects
 
 sealed class Day5Solution : Solution<Day5Solution.Almanac> {
   data object Part1 : Day5Solution() {
@@ -12,7 +15,7 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
 
   override fun parse(lines: Sequence<String>): Almanac {
     val seeds = mutableListOf<Almanac.Seed>()
-    val entriesBySourceType = mutableMapOf<Almanac.Type, MutableList<Almanac.Entry>>()
+    val mappingsBySourceType = mutableMapOf<Almanac.Type, Almanac.Mapping>()
     var currentPair: Pair<Almanac.Type, Almanac.Type>? = null
     for (line in lines.filter { it.isNotBlank() }) {
       when {
@@ -36,27 +39,24 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
 
         else -> {
           val (sourceType, destType) = currentPair
-          val (destStart, sourceStart, length) = line.split(' ', limit = 3).map { it.toInt() }
-          entriesBySourceType.compute(sourceType) { _, entries ->
-            val entry = Almanac.Entry(
-              sourceType = sourceType,
-              sourceRange = sourceStart..(sourceStart + length),
-              destType = destType,
-              destRange = destStart..(destStart + length),
+          val (destStart, sourceStart, length) = line.split(' ', limit = 3).map { it.toLong() }
+          mappingsBySourceType.compute(sourceType) { _, mapping ->
+            val nextMapping = mapping ?: Almanac.Mapping(sourceType, destType)
+
+            nextMapping.addEntry(
+              Almanac.Entry(
+                sourceRange = sourceStart..(sourceStart + length),
+                destRange = destStart..(destStart + length),
+              )
             )
 
-            if (entries == null) {
-              mutableListOf(entry)
-            } else {
-              entries.add(entry)
-              entries
-            }
+            nextMapping
           }
         }
       }
     }
 
-    return Almanac(seeds = seeds, entriesBySourceType = entriesBySourceType)
+    return Almanac(seeds = seeds, mappingsBySourceType = mappingsBySourceType)
   }
 
   private fun parseInts(line: String): Set<Int> {
@@ -68,14 +68,55 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
 
   data class Almanac(
     val seeds: List<Seed>,
-    val entriesBySourceType: Map<Type, List<Entry>>,
+    val mappingsBySourceType: Map<Type, Mapping>,
   ) {
-    data class Entry(
+    class Mapping(
       val sourceType: Type,
-      val sourceRange: IntRange,
       val destType: Type,
-      val destRange: IntRange,
-    )
+      entries: Collection<Entry> = listOf(),
+    ) {
+      private val intervalTree = IntervalTree<Entry>().apply {
+        insertAll(entries)
+      }
+
+      fun addEntry(entry: Entry) {
+        intervalTree.insert(entry)
+      }
+
+      fun map(value: Long): Long {
+        val overlapper = intervalTree.minimumOverlapper(Interval.Simple(value, 1))
+        return overlapper.map { it.map(value) }.orElse(value)
+      }
+
+      override fun hashCode(): Int {
+        return Objects.hash(
+          sourceType,
+          destType,
+          intervalTree.toSet(),
+        )
+      }
+
+      override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is Mapping) return false
+
+        return sourceType == other.sourceType &&
+          destType == other.destType &&
+          intervalTree.toSet() == other.intervalTree.toSet()
+      }
+    }
+
+    data class Entry(
+      val sourceRange: LongRange,
+      val destRange: LongRange,
+    ) : Interval {
+      override val start: Long = sourceRange.first
+      override val endExclusive: Long = sourceRange.endExclusive
+
+      fun map(value: Long): Long {
+        return destRange.first + (value - sourceRange.first)
+      }
+    }
 
     enum class Type {
       Seed,
