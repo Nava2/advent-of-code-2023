@@ -9,7 +9,18 @@ import java.util.Objects
 sealed class Day5Solution : Solution<Day5Solution.Almanac> {
   data object Part1 : Day5Solution() {
     override fun solve(input: Almanac): ComputedResult {
-      TODO()
+      val result = input.seeds.minOf { seed ->
+        var value = seed.id
+        var mapping: Almanac.Mapping? = input.mappingsBySourceType.getValue(Almanac.Type.Seed)
+        while (mapping != null) {
+          value = mapping.map(value)
+          mapping = input.mappingsBySourceType[mapping.destType]
+        }
+
+        value
+      }
+
+      return ComputedResult.Simple(result)
     }
   }
 
@@ -24,7 +35,7 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
             .splitToSequence(' ')
           seeds.addAll(
             seedValues
-              .map { it.trim().toInt() }
+              .map { it.trim().toLong() }
               .map { Almanac.Seed(it) },
           )
         }
@@ -57,13 +68,6 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
     }
 
     return Almanac(seeds = seeds, mappingsBySourceType = mappingsBySourceType)
-  }
-
-  private fun parseInts(line: String): Set<Int> {
-    return line.splitToSequence(' ')
-      .filter { it.isNotBlank() }
-      .map { it.toInt() }
-      .toSet()
   }
 
   data class Almanac(
@@ -139,6 +143,6 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
     }
 
     @JvmInline
-    value class Seed(val id: Int)
+    value class Seed(val id: Long)
   }
 }

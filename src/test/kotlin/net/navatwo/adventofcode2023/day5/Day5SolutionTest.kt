@@ -1,6 +1,9 @@
 package net.navatwo.adventofcode2023.day5
 
+import net.navatwo.adventofcode2023.benchmarks.Benchmark
 import net.navatwo.adventofcode2023.day5.Day5Solution.Almanac
+import net.navatwo.adventofcode2023.isComputed
+import net.navatwo.adventofcode2023.loadText
 import net.navatwo.adventofcode2023.parseResource
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -75,27 +78,27 @@ class Day5SolutionTest {
     assertThat(mapping.map(96L)).isEqualTo(96L)
   }
 
-//  @Test
-//  fun `p1 sample`() {
-//    val resourceName = "day5/p1_sample.txt"
-//    val solution = Day5Solution.Part1
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day5Solution.Part1.solve(input)).isComputed(13)
-//  }
-//
-//  @Test
-//  fun `p1`() {
-//    val resourceName = "day5/p1_input.txt"
-//    val solution = Day5Solution.Part1
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day5Solution.Part1.solve(input)).isComputed(21959L)
-//
-//    Benchmark.run(
-//      inputContent = loadText(resourceName),
-//      solution = solution,
-//    )
-//  }
-//
+  @Test
+  fun `p1 sample`() {
+    val resourceName = "day5/p1_sample.txt"
+    val solution = Day5Solution.Part1
+    val input = solution.parseResource(resourceName)
+    assertThat(Day5Solution.Part1.solve(input)).isComputed(35L)
+  }
+
+  @Test
+  fun `p1`() {
+    val resourceName = "day5/p1_input.txt"
+    val solution = Day5Solution.Part1
+    val input = solution.parseResource(resourceName)
+    assertThat(Day5Solution.Part1.solve(input)).isComputed(165788812L)
+
+    Benchmark.run(
+      inputContent = loadText(resourceName),
+      solution = solution,
+    )
+  }
+
 //  @Test
 //  fun `p2 sample`() {
 //    val resourceName = "day5/p1_sample.txt"
