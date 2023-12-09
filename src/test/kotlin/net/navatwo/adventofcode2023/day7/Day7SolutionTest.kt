@@ -1,6 +1,10 @@
 package net.navatwo.adventofcode2023.day7
 
 import net.navatwo.adventofcode2023.benchmarks.Benchmark
+import net.navatwo.adventofcode2023.day7.Day7Solution.Bid
+import net.navatwo.adventofcode2023.day7.Day7Solution.Game
+import net.navatwo.adventofcode2023.day7.Day7Solution.Hand
+import net.navatwo.adventofcode2023.day7.Day7Solution.PlayingCard
 import net.navatwo.adventofcode2023.isComputed
 import net.navatwo.adventofcode2023.loadText
 import net.navatwo.adventofcode2023.parseResource
@@ -12,8 +16,18 @@ class Day7SolutionTest {
   fun `p1 parse`() {
     val resourceName = "day7/p1_sample.txt"
     val solution = Day7Solution.Part1
-    val inputs = solution.parseResource(resourceName)
-    assertThat(inputs).isNotEmpty()
+    val game = solution.parseResource(resourceName)
+    assertThat(game).isEqualTo(
+      Game(
+        handPairs = listOf(
+          Hand.parse("32T3K") to Bid(765),
+          Hand.parse("T55J5") to Bid(684),
+          Hand.parse("KK677") to Bid(28),
+          Hand.parse("KTJJT") to Bid(220),
+          Hand.parse("QQQJA") to Bid(483),
+        )
+      )
+    )
   }
 
   @Test
@@ -21,7 +35,7 @@ class Day7SolutionTest {
     val resourceName = "day7/p1_sample.txt"
     val solution = Day7Solution.Part1
     val input = solution.parseResource(resourceName)
-    assertThat(Day7Solution.Part1.solve(input)).isComputed(32L)
+    assertThat(Day7Solution.Part1.solve(input)).isComputed(6440L)
   }
 
   @Test
@@ -57,4 +71,24 @@ class Day7SolutionTest {
 //      solution = solution,
 //    )
 //  }
+
+  @Test
+  fun `hand parse`() {
+    val hand = Hand.parse("AKQJT98765432")
+    assertThat(hand.cards).containsExactly(
+      PlayingCard.Ace,
+      PlayingCard.King,
+      PlayingCard.Queen,
+      PlayingCard.Jack,
+      PlayingCard.Ten,
+      PlayingCard.Nine,
+      PlayingCard.Eight,
+      PlayingCard.Seven,
+      PlayingCard.Six,
+      PlayingCard.Five,
+      PlayingCard.Four,
+      PlayingCard.Three,
+      PlayingCard.Two,
+    )
+  }
 }
