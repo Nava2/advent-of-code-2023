@@ -10,26 +10,75 @@ sealed class Day8Solution : Solution<Day8Solution.Input> {
 
       val initialNodeName = NodeName("AAA")
 
-      var currentNode = graph.nodes.getValue(initialNodeName)
+      val result = computeDistanceToEnd(graph, initialNodeName, input) { it == NodeName("ZZZ") }
 
-      val directionsIterator = iterator {
-        while (true) {
-          yieldAll(input.directions.directions)
-        }
+      return ComputedResult.Simple(result)
+    }
+  }
+
+  protected fun computeDistanceToEnd(
+    graph: Graph,
+    initialNodeName: NodeName,
+    input: Input,
+    isEndNode: (NodeName) -> Boolean,
+  ): Long {
+    var currentNode = graph.nodes.getValue(initialNodeName)
+
+    val directionsIterator = input.directionsIterator()
+
+    var result = 0L
+    while (!isEndNode(currentNode.name)) {
+      currentNode = when (directionsIterator.next()) {
+        Direction.Left -> currentNode.left
+        Direction.Right -> currentNode.right
       }
 
-      var result = 0L
-      while (currentNode.name != NodeName("ZZZ")) {
-        val direction = directionsIterator.next()
+      result += 1
+    }
+    return result
+  }
 
-        currentNode = when (direction) {
-          Direction.Left -> currentNode.left
-          Direction.Right -> currentNode.right
-        }
+  data object Part2 : Day8Solution() {
+    override fun solve(input: Input): ComputedResult {
+      val graph = Graph.create(input.nodes)
 
-        result += 1
+      val currentNodes = graph.nodes.keys.asSequence()
+        .filter { it.name.last() == 'A' }
+        .map { graph.nodes.getValue(it) }
+        .toList()
+
+      val distanceToFirst = currentNodes.associateWith { node ->
+        computeDistanceToEnd(graph, node.name, input) { it.name.last() == 'Z' }
       }
 
+      /**
+       * computes the greatest common divisor of a list of numbers
+       */
+      fun gcd(a: Long, b: Long): Long {
+        var x = a
+        var y = b
+        while (y > 0) {
+          val temp = y
+          y = x % y
+          x = temp
+        }
+
+        return x
+      }
+
+      /**
+       * Compute the least common multiple of two numbers
+       */
+      fun lcm(a: Long, b: Long): Long {
+        return a * b / gcd(a, b)
+      }
+
+      // Using the distance it takes to get to one, we know each one will always go to one end.
+      // We can then figure out that cycles happen and push each one _eventually_ back to the end. This assumed
+      // that the _first_ end node is the right one.
+      //
+      // This also assumes it cycles *from beginning* to the end node, such that the cycles traverse the entire space.
+      val result = distanceToFirst.values.reduce(::lcm)
       return ComputedResult.Simple(result)
     }
   }
@@ -129,7 +178,13 @@ sealed class Day8Solution : Solution<Day8Solution.Input> {
   data class Input(
     val directions: Directions,
     val nodes: Map<NodeName, NodeData>,
-  )
+  ) {
+    fun directionsIterator(): Iterator<Direction> = iterator {
+      while (true) {
+        yieldAll(directions.directions)
+      }
+    }
+  }
 
   @JvmInline
   value class Directions(val directions: List<Direction>)
