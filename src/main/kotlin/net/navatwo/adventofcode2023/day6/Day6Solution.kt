@@ -2,6 +2,8 @@ package net.navatwo.adventofcode2023.day6
 
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
+import kotlin.math.ceil
+import kotlin.math.floor
 
 sealed class Day6Solution : Solution<Day6Solution.Races> {
   data object Part1 : Day6Solution() {
@@ -28,26 +30,32 @@ sealed class Day6Solution : Solution<Day6Solution.Races> {
   }
 
   protected fun computeNumberOfWinners(time: TimeMs, record: DistanceMM): Long {
-    var result = 0L
+    // r = record
+    // d = distance past record
+    // t = max time
+    // h = hold time
+    //
+    // (r + d) = (t - h) * h
+    // (r + d) = -h^2 + t * h
+    //
+    // solving this equation for d = 0, then using the spaces between the roots computes the number
+    // of values that are winners.
+    // d = -h^2 + t * h - r
+    val (first, last) = findRoots(-1, time.value, -record.value)
 
-    for (holdTime in 1 until time.value) {
-      val distanceTravelled = computeDistanceTravelled(TimeMs(holdTime), time)
-      if (distanceTravelled.value > record.value) {
-        result += 1
-      }
-    }
-
-    return result
+    // need to round first *down* and last *up* to get the correct value as the result could
+    // be a decimal value for each root
+    return floor(last).toLong() - ceil(first).toLong() + 1
   }
 
-  private fun computeDistanceTravelled(holdTime: TimeMs, raceTime: TimeMs): DistanceMM {
-    if (holdTime.value >= raceTime.value) {
-      return DistanceMM(0)
-    }
-
-    val speed = holdTime.value
-    val distanceTravelledMM = (raceTime.value - holdTime.value) * speed
-    return DistanceMM(distanceTravelledMM)
+  /**
+   * Find the roots of the quadratic equation.
+   */
+  private fun findRoots(a: Long, b: Long, c: Long): Pair<Double, Double> {
+    val sqrt = Math.sqrt((b * b - 4 * a * c).toDouble())
+    val root1 = (-b + sqrt) / (2 * a)
+    val root2 = (-b - sqrt) / (2 * a)
+    return minOf(root1, root2) to maxOf(root1, root2)
   }
 
   override fun parse(lines: Sequence<String>): Races {

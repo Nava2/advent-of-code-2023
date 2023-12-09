@@ -51,17 +51,16 @@ class Day6SolutionTest {
     assertThat(Day6Solution.Part2.solve(input)).isComputed(71503)
   }
 
-//
-//  @Test
-//  fun `p2`() {
-//    val resourceName = "day6/p1_input.txt"
-//    val solution = Day6Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day6Solution.Part2.solve(input)).isComputed(5132675L)
-//
-//    Benchmark.run(
-//      inputContent = loadText(resourceName),
-//      solution = solution,
-//    )
-//  }
+  @Test
+  fun `p2`() {
+    val resourceName = "day6/p1_input.txt"
+    val solution = Day6Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day6Solution.Part2.solve(input)).isComputed(32583852L)
+
+    Benchmark.run(
+      inputContent = loadText(resourceName),
+      solution = solution,
+    )
+  }
 }
