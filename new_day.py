@@ -15,6 +15,10 @@ def _touch(path: Path):
 def _rewrite_template(day_number: int, year: int, templated_input: Path, output: Path):
     output.parent.mkdir(parents=True, exist_ok=True)
 
+    if output.exists():
+        print(f'{output} already exists. Skipping.')
+        return
+
     with output.open(mode='w') as f:
         with templated_input.open() as template:
             for templated_line in template:
