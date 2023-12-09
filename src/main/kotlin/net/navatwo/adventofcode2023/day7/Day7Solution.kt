@@ -9,10 +9,10 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
     override fun solve(input: Game): ComputedResult {
       val computeHandTypes = input.handPairs.asSequence()
         .map { (hand, bid) ->
-          ComputedTriple(hand, bid)
+          ComputedTriple.create(hand, bid)
         }
 
-      val rankedHands = computeHandTypes.toSortedSet(ComputedTriple.comparator.reversed())
+      val rankedHands = computeHandTypes.toSortedSet(tripleComparator.reversed())
 
       val rankedBids = rankedHands.asSequence().map { it.bid }
 
@@ -23,20 +23,40 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
       return ComputedResult.Simple(result)
     }
 
-    data class ComputedTriple(
-      val hand: Hand,
-      val bid: Bid,
-    ) {
-      val handType = HandType.compute(hand)
+    private val cardComparator: Comparator<PlayingCard> = Comparator.comparing { it.ordinal }
 
-      override fun toString(): String {
-        return "ComputedTriple(hand=$hand, handType=$handType, bid=$bid)"
+    private val tripleComparator: Comparator<ComputedTriple> = Comparator
+      .comparing<ComputedTriple, HandType> { it.handType }
+      .thenBy(Hand.comparator(cardComparator)) { it.hand }
+
+    private fun ComputedTriple.Companion.create(hand: Hand, bid: Bid): ComputedTriple {
+      return ComputedTriple(hand, HandType.computePart1(hand), bid)
+    }
+
+    internal fun HandType.Companion.computePart1(hand: Hand): HandType {
+      val cardCounts = hand.cards.fold(mutableMapOf<PlayingCard, Int>()) { acc, card ->
+        acc.compute(card) { _, count ->
+          (count ?: 0) + 1
+        }
+        acc
       }
 
-      companion object {
-        val comparator: java.util.Comparator<ComputedTriple> = Comparator
-          .comparing<ComputedTriple, HandType> { it.handType }
-          .thenBy { it.hand }
+      val (highestCountCard, highestCount) = cardCounts.entries.maxBy { (_, count) -> count }
+
+      return when {
+        cardCounts.size == 1 -> HandType.FiveOfAKind
+        cardCounts.size == 2 -> {
+          if (highestCount in 2..3) {
+            HandType.FullHouse
+          } else {
+            HandType.FourOfAKind
+          }
+        }
+
+        cardCounts.size == 3 && highestCount == 3 -> HandType.ThreeOfAKind
+        cardCounts.size == 3 && highestCount == 2 -> HandType.TwoPair
+        cardCounts.size == 4 -> HandType.OnePair
+        else -> HandType.HighCard
       }
     }
   }
@@ -50,20 +70,28 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
     return Game(handPairs.toList())
   }
 
+  data class ComputedTriple(
+    val hand: Hand,
+    val handType: HandType,
+    val bid: Bid,
+  ) {
+    companion object
+  }
+
   @JvmInline
-  value class Hand(val cards: List<PlayingCard>) : Comparable<Hand> {
-    override fun compareTo(other: Hand): Int {
-      for ((c1, c2) in cards.asSequence().zip(other.cards.asSequence())) {
-        val cardComparison = c1.compareTo(c2)
-        if (cardComparison != 0) return cardComparison
-      }
-
-      return 0
-    }
-
+  value class Hand(val cards: List<PlayingCard>) {
     override fun toString(): String = cards.joinToString(separator = "") { it.shortName.toString() }
 
     companion object {
+      fun comparator(cardComparator: Comparator<PlayingCard>): Comparator<Hand> = Comparator { h1, h2 ->
+        for ((c1, c2) in h1.cards.asSequence().zip(h2.cards.asSequence())) {
+          val cardComparison = cardComparator.compare(c1, c2)
+          if (cardComparison != 0) return@Comparator cardComparison
+        }
+
+        0
+      }
+
       fun parse(line: CharSequence): Hand {
         val cards = line.map { PlayingCard.byShortName(it) }
         return Hand(cards)
@@ -112,33 +140,6 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
     HighCard,
     ;
 
-    companion object {
-      fun compute(hand: Hand): HandType {
-        val cardCounts = hand.cards.fold(mutableMapOf<PlayingCard, Int>()) { acc, card ->
-          acc.compute(card) { _, count ->
-            (count ?: 0) + 1
-          }
-          acc
-        }
-
-        val (highestCountCard, highestCount) = cardCounts.entries.maxBy { (_, count) -> count }
-
-        return when {
-          cardCounts.size == 1 -> FiveOfAKind
-          cardCounts.size == 2 -> {
-            if (highestCount in 2..3) {
-              FullHouse
-            } else {
-              FourOfAKind
-            }
-          }
-
-          cardCounts.size == 3 && highestCount == 3 -> ThreeOfAKind
-          cardCounts.size == 3 && highestCount == 2 -> TwoPair
-          cardCounts.size == 4 -> OnePair
-          else -> HighCard
-        }
-      }
-    }
+    companion object
   }
 }

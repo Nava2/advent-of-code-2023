@@ -5,6 +5,7 @@ import net.navatwo.adventofcode2023.day7.Day7Solution.Bid
 import net.navatwo.adventofcode2023.day7.Day7Solution.Game
 import net.navatwo.adventofcode2023.day7.Day7Solution.Hand
 import net.navatwo.adventofcode2023.day7.Day7Solution.HandType
+import net.navatwo.adventofcode2023.day7.Day7Solution.Part1.computePart1
 import net.navatwo.adventofcode2023.day7.Day7Solution.PlayingCard
 import net.navatwo.adventofcode2023.isComputed
 import net.navatwo.adventofcode2023.loadText
@@ -97,10 +98,10 @@ class Day7SolutionTest {
 
   @ParameterizedTest(name = "hand = {0}, expected = {1}")
   @MethodSource("handTypeTestProvider")
-  fun `compute handType`(handString: String, expected: HandType) {
+  fun `p1 compute handType`(handString: String, expected: HandType) {
     val hand = Hand.parse(handString)
 
-    assertThat(HandType.compute(hand)).isEqualTo(expected)
+    assertThat(HandType.computePart1(hand)).isEqualTo(expected)
   }
 
   companion object {
