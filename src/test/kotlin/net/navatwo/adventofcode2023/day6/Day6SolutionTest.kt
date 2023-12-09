@@ -17,7 +17,7 @@ class Day6SolutionTest {
     assertThat(races).isEqualTo(
       Races(
         times = listOf("7", "15", "30"),
-        distances = listOf("9", "40", "200"),
+        records = listOf("9", "40", "200"),
       )
     )
   }
@@ -43,13 +43,14 @@ class Day6SolutionTest {
     )
   }
 
-//  @Test
-//  fun `p2 sample`() {
-//    val resourceName = "day6/p1_sample.txt"
-//    val solution = Day6Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day6Solution.Part2.solve(input)).isComputed(46)
-//  }
+  @Test
+  fun `p2 sample`() {
+    val resourceName = "day6/p1_sample.txt"
+    val solution = Day6Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day6Solution.Part2.solve(input)).isComputed(71503)
+  }
+
 //
 //  @Test
 //  fun `p2`() {

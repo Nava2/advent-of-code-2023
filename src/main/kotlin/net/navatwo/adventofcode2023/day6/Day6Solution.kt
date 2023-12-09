@@ -7,13 +7,23 @@ sealed class Day6Solution : Solution<Day6Solution.Races> {
   data object Part1 : Day6Solution() {
     override fun solve(input: Races): ComputedResult {
       val races = input.times.asSequence()
-        .zip(input.distances.asSequence()) { time, distance ->
+        .zip(input.records.asSequence()) { time, distance ->
           TimeMs(time.toLong()) to DistanceMM(distance.toLong())
         }
       val winnersPerRace = races.map { (time, record) -> computeNumberOfWinners(time, record) }
 
       val multiple = winnersPerRace.fold(1L, Long::times)
       return ComputedResult.Simple(multiple)
+    }
+  }
+
+  data object Part2 : Day6Solution() {
+    override fun solve(input: Races): ComputedResult {
+      val time = input.times.fold(StringBuilder(), StringBuilder::append).toString().toLong()
+      val record = input.records.fold(StringBuilder(), StringBuilder::append).toString().toLong()
+
+      val result = computeNumberOfWinners(TimeMs(time), DistanceMM(record))
+      return ComputedResult.Simple(result)
     }
   }
 
@@ -60,9 +70,9 @@ sealed class Day6Solution : Solution<Day6Solution.Races> {
   @JvmInline
   value class DistanceMM(val value: Long)
 
-  data class Races(val times: List<String>, val distances: List<String>) {
+  data class Races(val times: List<String>, val records: List<String>) {
     init {
-      check(times.size == distances.size)
+      check(times.size == records.size)
     }
   }
 }
