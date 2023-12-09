@@ -1,5 +1,6 @@
 package net.navatwo.adventofcode2023.day5
 
+import com.github.nava2.interval_tree.Interval
 import net.navatwo.adventofcode2023.benchmarks.Benchmark
 import net.navatwo.adventofcode2023.day5.Day5Solution.Almanac
 import net.navatwo.adventofcode2023.isComputed
@@ -79,6 +80,43 @@ class Day5SolutionTest {
   }
 
   @Test
+  fun `verify intersect behaviour`() {
+    val smaller = Interval.Simple(79, 14)
+    val largerLeft = Interval.Simple(60, 79 - 60 + 10)
+
+    val bad1 = Interval.Simple(79, 14)
+    val bad2 = Interval.Simple(50, 98-50)
+    assertThat(bad1.intersect(bad2))
+      .isEqualTo(Interval.Simple(79, 14))
+      .isEqualTo(bad1.intersect(bad2))
+
+    val bad3 = Interval.Simple(74, 14)
+    val bad4 = Interval.Simple(64, 77 - 64)
+    assertThat(bad3.intersect(bad4))
+      .isEqualTo(Interval.Simple(74, 3))
+      .isEqualTo(bad3.intersect(bad4))
+
+    assertThat(smaller.intersect(largerLeft))
+      .isEqualTo(Interval.Simple(79, 10))
+      .isEqualTo(largerLeft.intersect(smaller))
+
+    val largerRight = Interval.Simple(82, 40)
+    assertThat(smaller.intersect(largerRight))
+      .isEqualTo(Interval.Simple(82, 11))
+      .isEqualTo(largerRight.intersect(smaller))
+
+    val withinSmaller = Interval.Simple(80, 5)
+    assertThat(smaller.intersect(withinSmaller))
+      .isEqualTo(withinSmaller)
+      .isEqualTo(withinSmaller.intersect(smaller))
+
+    val touchingSmallerLeft = Interval.Simple(75, 4)
+    assertThat(smaller.intersect(touchingSmallerLeft))
+      .isEqualTo(touchingSmallerLeft.intersect(smaller))
+      .isNull()
+  }
+
+  @Test
   fun `p1 sample`() {
     val resourceName = "day5/p1_sample.txt"
     val solution = Day5Solution.Part1
@@ -99,24 +137,24 @@ class Day5SolutionTest {
     )
   }
 
-//  @Test
-//  fun `p2 sample`() {
-//    val resourceName = "day5/p1_sample.txt"
-//    val solution = Day5Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day5Solution.Part2.solve(input)).isComputed(30)
-//  }
-//
-//  @Test
-//  fun `p2`() {
-//    val resourceName = "day5/p1_input.txt"
-//    val solution = Day5Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day5Solution.Part2.solve(input)).isComputed(5132675L)
-//
-//    Benchmark.run(
-//      inputContent = loadText(resourceName),
-//      solution = solution,
-//    )
-//  }
+  @Test
+  fun `p2 sample`() {
+    val resourceName = "day5/p1_sample.txt"
+    val solution = Day5Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day5Solution.Part2.solve(input)).isComputed(46)
+  }
+
+  @Test
+  fun `p2`() {
+    val resourceName = "day5/p1_input.txt"
+    val solution = Day5Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day5Solution.Part2.solve(input)).isComputed(5132675L)
+
+    Benchmark.run(
+      inputContent = loadText(resourceName),
+      solution = solution,
+    )
+  }
 }

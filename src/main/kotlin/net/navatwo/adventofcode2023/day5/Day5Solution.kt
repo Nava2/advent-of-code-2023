@@ -10,17 +10,63 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
   data object Part1 : Day5Solution() {
     override fun solve(input: Almanac): ComputedResult {
       val result = input.seeds.minOf { seed ->
-        var value = seed.id
-        var mapping: Almanac.Mapping? = input.mappingsBySourceType.getValue(Almanac.Type.Seed)
-        while (mapping != null) {
-          value = mapping.map(value)
-          mapping = input.mappingsBySourceType[mapping.destType]
-        }
-
-        value
+        input.computeSeedLocation(seed)
       }
 
       return ComputedResult.Simple(result)
+    }
+
+    private fun Almanac.computeSeedLocation(seed: Almanac.Seed): Long {
+      var value = seed.id
+      var mapping: Almanac.Mapping? = mappingsBySourceType.getValue(Almanac.Type.Seed)
+      while (mapping != null) {
+        value = mapping.map(value)
+        mapping = mappingsBySourceType[mapping.destType]
+      }
+
+      return value
+    }
+  }
+
+  data object Part2 : Day5Solution() {
+    override fun solve(input: Almanac): ComputedResult {
+      val seeds = (0 until input.seeds.size step 2)
+        .asSequence()
+        .map { i ->
+          input.seeds[i] to input.seeds[i + 1].id
+        }
+        .map { (seed, range) ->
+          Almanac.Entry(
+            sourceRange = seed.id until (seed.id + range),
+            destRange = seed.id until (seed.id + range),
+          )
+        }
+
+      val result = seeds.minOf { seed ->
+        input.computeMinimumSeedLocation(seed)
+      }
+
+      return ComputedResult.Simple(result)
+    }
+
+    private fun Almanac.computeMinimumSeedLocation(interval: Almanac.Entry): Long {
+      var mapping: Almanac.Mapping? = mappingsBySourceType.getValue(Almanac.Type.Seed)
+
+      var intervals = listOf<Interval>(interval)
+      while (mapping != null) {
+        intervals = computeNextIntervals(mapping, intervals)
+        mapping = mappingsBySourceType[mapping.destType]
+      }
+
+      return intervals.minOf { it.start }
+    }
+
+    private fun computeNextIntervals(mapping: Almanac.Mapping, intervals: List<Interval>): List<Interval> {
+      val next = intervals.flatMap { mapping.mapRange(it) }
+      check(next.sumOf { it.length } == intervals.sumOf { it.length }) {
+        "wat: input: $intervals, next: $next"
+      }
+      return next
     }
   }
 
@@ -56,8 +102,8 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
 
             nextMapping.addEntry(
               Almanac.Entry(
-                sourceRange = sourceStart..(sourceStart + length),
-                destRange = destStart..(destStart + length),
+                sourceRange = sourceStart until (sourceStart + length),
+                destRange = destStart until (destStart + length),
               )
             )
 
@@ -92,6 +138,37 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
         return overlapper.map { it.map(value) }.orElse(value)
       }
 
+      fun mapRange(interval: Interval): Sequence<Interval> {
+        val overlappers = intervalTree.overlappers(interval)
+        return sequence {
+          var value = interval.start
+          for (overlapper in overlappers) {
+            if (overlapper.start > value) {
+              yield(Interval.Simple(value, overlapper.start - value))
+            }
+
+            val truncated = overlapper.intersect(interval)
+              ?: error("wat")
+
+            val destOffset = overlapper.destRange.first - overlapper.sourceRange.first
+            val destStart = truncated.start + destOffset
+            yield(
+              Interval.Simple(destStart, truncated.length)
+            )
+
+            value = truncated.endExclusive
+          }
+
+          if (value != interval.endExclusive) {
+            yield(Interval.Simple(value, interval.endExclusive - value))
+          }
+        }
+      }
+
+      override fun toString(): String {
+        return "Mapping(sourceType=$sourceType, destType=$destType, intervalTree=${intervalTree.toList()})"
+      }
+
       override fun hashCode(): Int {
         return Objects.hash(
           sourceType,
@@ -105,8 +182,8 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
         if (other !is Mapping) return false
 
         return sourceType == other.sourceType &&
-          destType == other.destType &&
-          intervalTree.toSet() == other.intervalTree.toSet()
+            destType == other.destType &&
+            intervalTree.toSet() == other.intervalTree.toSet()
       }
     }
 
@@ -145,4 +222,15 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
     @JvmInline
     value class Seed(val id: Long)
   }
+}
+
+fun Interval.intersect(other: Interval): Interval? {
+  if (start > other.endInclusive || endInclusive < other.start) {
+    return null
+  }
+
+  val truncatedStart = maxOf(start, other.start)
+  val truncatedEndExclusive = minOf(endExclusive, other.endExclusive)
+  val truncatedLength = truncatedEndExclusive - truncatedStart
+  return Interval.Simple(truncatedStart, truncatedLength)
 }
