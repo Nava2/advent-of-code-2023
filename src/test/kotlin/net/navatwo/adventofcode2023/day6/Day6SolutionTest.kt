@@ -27,7 +27,7 @@ class Day6SolutionTest {
     val resourceName = "day6/p1_sample.txt"
     val solution = Day6Solution.Part1
     val input = solution.parseResource(resourceName)
-    assertThat(Day6Solution.Part1.solve(input)).isComputed(32L)
+    assertThat(Day6Solution.Part1.solve(input)).isComputed(288L)
   }
 
   @Test

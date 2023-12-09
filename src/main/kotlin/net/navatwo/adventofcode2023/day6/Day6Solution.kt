@@ -6,8 +6,33 @@ import net.navatwo.adventofcode2023.framework.Solution
 sealed class Day6Solution : Solution<List<Day6Solution.Race>> {
   data object Part1 : Day6Solution() {
     override fun solve(input: List<Race>): ComputedResult {
-      // TODO Implement
-      return ComputedResult.Simple(32L)
+      val winnersPerRace = input.asSequence().map { computeNumberOfWinners(it) }
+
+      val multiple = winnersPerRace.fold(1L, Long::times)
+      return ComputedResult.Simple(multiple)
+    }
+
+    private fun computeNumberOfWinners(race: Race): Long {
+      var result = 0L
+
+      for (holdTime in 1 until race.time.value) {
+        val distanceTravelled = computeDistanceTravelled(TimeMs(holdTime), race.time)
+        if (distanceTravelled.value > race.distance.value) {
+          result += 1
+        }
+      }
+
+      return result
+    }
+
+    private fun computeDistanceTravelled(holdTime: TimeMs, raceTime: TimeMs): DistanceMM {
+      if (holdTime.value >= raceTime.value) {
+        return DistanceMM(0)
+      }
+
+      val speed = holdTime.value
+      val distanceTravelledMM = (raceTime.value - holdTime.value) * speed
+      return DistanceMM(distanceTravelledMM)
     }
   }
 
