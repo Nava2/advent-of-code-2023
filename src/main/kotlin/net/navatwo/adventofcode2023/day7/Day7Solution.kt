@@ -4,10 +4,40 @@ import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
 
 sealed class Day7Solution : Solution<Day7Solution.Game> {
+
   data object Part1 : Day7Solution() {
     override fun solve(input: Game): ComputedResult {
-      // TODO Implement
-      return ComputedResult.Simple(32L)
+      val computeHandTypes = input.handPairs.asSequence()
+        .map { (hand, bid) ->
+          ComputedTriple(hand, bid)
+        }
+
+      val rankedHands = computeHandTypes.toSortedSet(ComputedTriple.comparator.reversed())
+
+      val rankedBids = rankedHands.asSequence().map { it.bid }
+
+      val result = rankedBids.withIndex()
+        .fold(0L) { acc, (index, bid) ->
+          acc + (index + 1) * bid.value
+        }
+      return ComputedResult.Simple(result)
+    }
+
+    data class ComputedTriple(
+      val hand: Hand,
+      val bid: Bid,
+    ) {
+      val handType = HandType.compute(hand)
+
+      override fun toString(): String {
+        return "ComputedTriple(hand=$hand, handType=$handType, bid=$bid)"
+      }
+
+      companion object {
+        val comparator: java.util.Comparator<ComputedTriple> = Comparator
+          .comparing<ComputedTriple, HandType> { it.handType }
+          .thenBy { it.hand }
+      }
     }
   }
 
@@ -21,7 +51,18 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
   }
 
   @JvmInline
-  value class Hand(val cards: List<PlayingCard>) {
+  value class Hand(val cards: List<PlayingCard>) : Comparable<Hand> {
+    override fun compareTo(other: Hand): Int {
+      for ((c1, c2) in cards.asSequence().zip(other.cards.asSequence())) {
+        val cardComparison = c1.compareTo(c2)
+        if (cardComparison != 0) return cardComparison
+      }
+
+      return 0
+    }
+
+    override fun toString(): String = cards.joinToString(separator = "") { it.shortName.toString() }
+
     companion object {
       fun parse(line: CharSequence): Hand {
         val cards = line.map { PlayingCard.byShortName(it) }
@@ -31,7 +72,7 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
   }
 
   @JvmInline
-  value class Bid(val long: Long)
+  value class Bid(val value: Long)
 
   @JvmInline
   value class Game(val handPairs: List<Pair<Hand, Bid>>)
@@ -91,6 +132,7 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
               FourOfAKind
             }
           }
+
           cardCounts.size == 3 && highestCount == 3 -> ThreeOfAKind
           cardCounts.size == 3 && highestCount == 2 -> TwoPair
           cardCounts.size == 4 -> OnePair
