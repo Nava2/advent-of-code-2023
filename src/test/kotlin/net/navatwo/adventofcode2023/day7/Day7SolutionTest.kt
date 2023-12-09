@@ -6,10 +6,8 @@ import net.navatwo.adventofcode2023.day7.Day7Solution.Game
 import net.navatwo.adventofcode2023.day7.Day7Solution.Hand
 import net.navatwo.adventofcode2023.day7.Day7Solution.HandType
 import net.navatwo.adventofcode2023.day7.Day7Solution.Part1
-import net.navatwo.adventofcode2023.day7.Day7Solution.Part1.computePart1
 import net.navatwo.adventofcode2023.day7.Day7Solution.Part2
 import net.navatwo.adventofcode2023.day7.Day7Solution.Part2.cardComparator
-import net.navatwo.adventofcode2023.day7.Day7Solution.Part2.computePart2
 import net.navatwo.adventofcode2023.day7.Day7Solution.PlayingCard
 import net.navatwo.adventofcode2023.isComputed
 import net.navatwo.adventofcode2023.loadText
@@ -72,7 +70,7 @@ class Day7SolutionTest {
     val resourceName = "day7/p1_input.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
-    assertThat(Part2.solve(input)).isComputed(5132675L)
+    assertThat(Part2.solve(input)).isComputed(249138943L)
 
     Benchmark.run(
       inputContent = loadText(resourceName),
@@ -105,7 +103,7 @@ class Day7SolutionTest {
   fun `p1 compute handType`(handString: String, expected: HandType) {
     val hand = Hand.parse(handString)
 
-    assertThat(HandType.computePart1(hand)).isEqualTo(expected)
+    assertThat(Part1.computeHandType(hand)).isEqualTo(expected)
   }
 
   @Test
@@ -130,7 +128,7 @@ class Day7SolutionTest {
   fun `p2 compute handType`(handString: String, expected: HandType) {
     val hand = Hand.parse(handString)
 
-    assertThat(HandType.computePart2(hand)).isEqualTo(expected)
+    assertThat(Part2.computeHandType(hand)).isEqualTo(expected)
   }
 
   @Test

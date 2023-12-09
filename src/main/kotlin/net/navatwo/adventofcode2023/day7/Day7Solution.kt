@@ -4,59 +4,45 @@ import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
 
 sealed class Day7Solution : Solution<Day7Solution.Game> {
+  internal abstract val handComparator: Comparator<Hand>
 
-  data object Part1 : Day7Solution() {
-    override fun solve(input: Game): ComputedResult {
-      val computeHandTypes = input.handPairs.asSequence()
-        .map { (hand, bid) ->
-          ComputedTriple.create(hand, bid)
-        }
-
-      val rankedHands = computeHandTypes.toSortedSet(tripleComparator.reversed())
-
-      val rankedBids = rankedHands.asSequence().map { it.bid }
-
-      val result = rankedBids.withIndex()
-        .fold(0L) { acc, (index, bid) ->
-          acc + (index + 1) * bid.value
-        }
-      return ComputedResult.Simple(result)
-    }
-
-    internal val cardComparator: Comparator<PlayingCard> = Comparator.comparing { it.ordinal }
-    internal val handComparator = Hand.comparator(cardComparator)
-
-    private val tripleComparator: Comparator<ComputedTriple> = Comparator
+  // lazy due to accessing `abstract val` property
+  private val tripleComparator: Comparator<ComputedTriple> by lazy(LazyThreadSafetyMode.NONE) {
+    Comparator
       .comparing<ComputedTriple, HandType> { it.handType }
       .thenBy(handComparator) { it.hand }
+  }
 
-    private fun ComputedTriple.Companion.create(hand: Hand, bid: Bid): ComputedTriple {
-      return ComputedTriple(hand, HandType.computePart1(hand), bid)
-    }
+  internal abstract fun computeHandType(hand: Hand): HandType
 
-    internal fun HandType.Companion.computePart1(hand: Hand): HandType {
+  override fun solve(input: Game): ComputedResult {
+    val computeHandTypes = input.handPairs.asSequence()
+      .map { (hand, bid) ->
+        ComputedTriple(hand, computeHandType(hand), bid)
+      }
+
+    val rankedHands = computeHandTypes.toSortedSet(tripleComparator.reversed())
+
+    val rankedBids = rankedHands.asSequence().map { it.bid }
+
+    val result = rankedBids.withIndex()
+      .fold(0L) { acc, (index, bid) ->
+        acc + (index + 1) * bid.value
+      }
+    return ComputedResult.Simple(result)
+  }
+
+  data object Part1 : Day7Solution() {
+    internal val cardComparator: Comparator<PlayingCard> = Comparator.comparing { it.ordinal }
+    override val handComparator = Hand.comparator(cardComparator)
+
+    override fun computeHandType(hand: Hand): HandType {
       val cardFrequencies = hand.countCards()
-      return computeFromCardFrequencies(cardFrequencies)
+      return HandType.computeFromCardFrequencies(cardFrequencies)
     }
   }
 
   data object Part2 : Day7Solution() {
-    override fun solve(input: Game): ComputedResult {
-      val computeHandTypes = input.handPairs.asSequence()
-        .map { (hand, bid) ->
-          ComputedTriple.create(hand, bid)
-        }
-
-      val rankedHands = computeHandTypes.toSortedSet(tripleComparator.reversed())
-
-      val rankedBids = rankedHands.asSequence().map { it.bid }
-
-      val result = rankedBids.withIndex()
-        .fold(0L) { acc, (index, bid) ->
-          acc + (index + 1) * bid.value
-        }
-      return ComputedResult.Simple(result)
-    }
 
     internal val cardComparator: Comparator<PlayingCard> = Comparator.comparing { card ->
       if (card == PlayingCard.Jack) {
@@ -65,22 +51,15 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
         card.ordinal
       }
     }
-    internal val handComparator = Hand.comparator(cardComparator)
 
-    private val tripleComparator: Comparator<ComputedTriple> = Comparator
-      .comparing<ComputedTriple, HandType> { it.handType }
-      .thenBy(handComparator) { it.hand }
+    override val handComparator = Hand.comparator(cardComparator)
 
-    private fun ComputedTriple.Companion.create(hand: Hand, bid: Bid): ComputedTriple {
-      return ComputedTriple(hand, HandType.computePart2(hand), bid)
-    }
-
-    internal fun HandType.Companion.computePart2(hand: Hand): HandType {
+    override fun computeHandType(hand: Hand): HandType {
       val cardFrequencies = hand.countCards()
 
       val jackCount = cardFrequencies[PlayingCard.Jack]
         // No jacks => no need to upgrade them
-        ?: return computeFromCardFrequencies(cardFrequencies)
+        ?: return HandType.computeFromCardFrequencies(cardFrequencies)
 
       // update most frequent, non-Jack card to add count of jacks or add Ace with jack count otherwise
       val mostFrequentCard = cardFrequencies.entries.asSequence()
@@ -97,14 +76,14 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
         .maxByOrNull { (_, count) -> count }?.key
         ?: PlayingCard.Ace
 
-      val newFrequencies = cardFrequencies.toMutableMap().apply {
+      val newFrequencies = cardFrequencies.apply {
         remove(PlayingCard.Jack)
         compute(mostFrequentCard) { _, count ->
           (count ?: 0) + jackCount
         }
       }
 
-      return computeFromCardFrequencies(newFrequencies)
+      return HandType.computeFromCardFrequencies(newFrequencies)
     }
   }
 
