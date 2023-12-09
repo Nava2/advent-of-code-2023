@@ -60,4 +60,43 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
       }
     }
   }
+
+  enum class HandType {
+    FiveOfAKind,
+    FourOfAKind,
+    FullHouse,
+    ThreeOfAKind,
+    TwoPair,
+    OnePair,
+    HighCard,
+    ;
+
+    companion object {
+      fun compute(hand: Hand): HandType {
+        val cardCounts = hand.cards.fold(mutableMapOf<PlayingCard, Int>()) { acc, card ->
+          acc.compute(card) { _, count ->
+            (count ?: 0) + 1
+          }
+          acc
+        }
+
+        val (highestCountCard, highestCount) = cardCounts.entries.maxBy { (_, count) -> count }
+
+        return when {
+          cardCounts.size == 1 -> FiveOfAKind
+          cardCounts.size == 2 -> {
+            if (highestCount in 2..3) {
+              FullHouse
+            } else {
+              FourOfAKind
+            }
+          }
+          cardCounts.size == 3 && highestCount == 3 -> ThreeOfAKind
+          cardCounts.size == 3 && highestCount == 2 -> TwoPair
+          cardCounts.size == 4 -> OnePair
+          else -> HighCard
+        }
+      }
+    }
+  }
 }
