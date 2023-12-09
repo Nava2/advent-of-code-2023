@@ -23,41 +23,88 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
       return ComputedResult.Simple(result)
     }
 
-    private val cardComparator: Comparator<PlayingCard> = Comparator.comparing { it.ordinal }
+    internal val cardComparator: Comparator<PlayingCard> = Comparator.comparing { it.ordinal }
+    internal val handComparator = Hand.comparator(cardComparator)
 
     private val tripleComparator: Comparator<ComputedTriple> = Comparator
       .comparing<ComputedTriple, HandType> { it.handType }
-      .thenBy(Hand.comparator(cardComparator)) { it.hand }
+      .thenBy(handComparator) { it.hand }
 
     private fun ComputedTriple.Companion.create(hand: Hand, bid: Bid): ComputedTriple {
       return ComputedTriple(hand, HandType.computePart1(hand), bid)
     }
 
     internal fun HandType.Companion.computePart1(hand: Hand): HandType {
-      val cardCounts = hand.cards.fold(mutableMapOf<PlayingCard, Int>()) { acc, card ->
-        acc.compute(card) { _, count ->
-          (count ?: 0) + 1
-        }
-        acc
-      }
+      val cardFrequencies = hand.countCards()
+      return computeFromCardFrequencies(cardFrequencies)
+    }
+  }
 
-      val (highestCountCard, highestCount) = cardCounts.entries.maxBy { (_, count) -> count }
-
-      return when {
-        cardCounts.size == 1 -> HandType.FiveOfAKind
-        cardCounts.size == 2 -> {
-          if (highestCount in 2..3) {
-            HandType.FullHouse
-          } else {
-            HandType.FourOfAKind
-          }
+  data object Part2 : Day7Solution() {
+    override fun solve(input: Game): ComputedResult {
+      val computeHandTypes = input.handPairs.asSequence()
+        .map { (hand, bid) ->
+          ComputedTriple.create(hand, bid)
         }
 
-        cardCounts.size == 3 && highestCount == 3 -> HandType.ThreeOfAKind
-        cardCounts.size == 3 && highestCount == 2 -> HandType.TwoPair
-        cardCounts.size == 4 -> HandType.OnePair
-        else -> HandType.HighCard
+      val rankedHands = computeHandTypes.toSortedSet(tripleComparator.reversed())
+
+      val rankedBids = rankedHands.asSequence().map { it.bid }
+
+      val result = rankedBids.withIndex()
+        .fold(0L) { acc, (index, bid) ->
+          acc + (index + 1) * bid.value
+        }
+      return ComputedResult.Simple(result)
+    }
+
+    internal val cardComparator: Comparator<PlayingCard> = Comparator.comparing { card ->
+      if (card == PlayingCard.Jack) {
+        PlayingCard.Two.ordinal + 50 // really after 2
+      } else {
+        card.ordinal
       }
+    }
+    internal val handComparator = Hand.comparator(cardComparator)
+
+    private val tripleComparator: Comparator<ComputedTriple> = Comparator
+      .comparing<ComputedTriple, HandType> { it.handType }
+      .thenBy(handComparator) { it.hand }
+
+    private fun ComputedTriple.Companion.create(hand: Hand, bid: Bid): ComputedTriple {
+      return ComputedTriple(hand, HandType.computePart2(hand), bid)
+    }
+
+    internal fun HandType.Companion.computePart2(hand: Hand): HandType {
+      val cardFrequencies = hand.countCards()
+
+      val jackCount = cardFrequencies[PlayingCard.Jack]
+        // No jacks => no need to upgrade them
+        ?: return computeFromCardFrequencies(cardFrequencies)
+
+      // update most frequent, non-Jack card to add count of jacks or add Ace with jack count otherwise
+      val mostFrequentCard = cardFrequencies.entries.asSequence()
+        .filter { (card, _) -> card != PlayingCard.Jack }
+        .sortedWith { p1, p2 ->
+          val (card1, count1) = p1
+          val (card2, count2) = p2
+
+          val countComparison = count2.compareTo(count1)
+          if (countComparison != 0) return@sortedWith countComparison
+
+          cardComparator.compare(card1, card2)
+        }
+        .maxByOrNull { (_, count) -> count }?.key
+        ?: PlayingCard.Ace
+
+      val newFrequencies = cardFrequencies.toMutableMap().apply {
+        remove(PlayingCard.Jack)
+        compute(mostFrequentCard) { _, count ->
+          (count ?: 0) + jackCount
+        }
+      }
+
+      return computeFromCardFrequencies(newFrequencies)
     }
   }
 
@@ -80,6 +127,13 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
 
   @JvmInline
   value class Hand(val cards: List<PlayingCard>) {
+    fun countCards(): MutableMap<PlayingCard, Int> = cards.fold(mutableMapOf()) { acc, card ->
+      acc.compute(card) { _, count ->
+        (count ?: 0) + 1
+      }
+      acc
+    }
+
     override fun toString(): String = cards.joinToString(separator = "") { it.shortName.toString() }
 
     companion object {
@@ -140,6 +194,26 @@ sealed class Day7Solution : Solution<Day7Solution.Game> {
     HighCard,
     ;
 
-    companion object
+    companion object {
+      fun computeFromCardFrequencies(cardFrequencies: Map<PlayingCard, Int>): HandType {
+        val (highestCountCard, highestCount) = cardFrequencies.entries.maxBy { (_, count) -> count }
+
+        return when {
+          cardFrequencies.size == 1 -> FiveOfAKind
+          cardFrequencies.size == 2 -> {
+            if (highestCount in 2..3) {
+              FullHouse
+            } else {
+              FourOfAKind
+            }
+          }
+
+          cardFrequencies.size == 3 && highestCount == 3 -> ThreeOfAKind
+          cardFrequencies.size == 3 && highestCount == 2 -> TwoPair
+          cardFrequencies.size == 4 -> OnePair
+          else -> HighCard
+        }
+      }
+    }
   }
 }
