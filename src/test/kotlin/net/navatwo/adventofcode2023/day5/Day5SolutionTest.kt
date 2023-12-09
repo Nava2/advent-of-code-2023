@@ -85,7 +85,7 @@ class Day5SolutionTest {
     val largerLeft = Interval.Simple(60, 79 - 60 + 10)
 
     val bad1 = Interval.Simple(79, 14)
-    val bad2 = Interval.Simple(50, 98-50)
+    val bad2 = Interval.Simple(50, 98 - 50)
     assertThat(bad1.intersect(bad2))
       .isEqualTo(Interval.Simple(79, 14))
       .isEqualTo(bad1.intersect(bad2))

@@ -182,8 +182,8 @@ sealed class Day5Solution : Solution<Day5Solution.Almanac> {
         if (other !is Mapping) return false
 
         return sourceType == other.sourceType &&
-            destType == other.destType &&
-            intervalTree.toSet() == other.intervalTree.toSet()
+          destType == other.destType &&
+          intervalTree.toSet() == other.intervalTree.toSet()
       }
     }
 
