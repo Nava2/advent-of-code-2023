@@ -14,15 +14,14 @@ import net.navatwo.adventofcode2023.isComputed
 import net.navatwo.adventofcode2023.loadText
 import net.navatwo.adventofcode2023.parseResource
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class Day10SolutionTest {
   @Test
   fun `p1 parse`() {
     val filteredResourceName = "day10/p1_sample_2_filtered.txt"
-    val filteredGrid = Part1.parseResource(filteredResourceName)
-    assertThat(filteredGrid.rows).containsExactly(
+    val filteredLayout = Part1.parseResource(filteredResourceName)
+    assertThat(filteredLayout.tiles.rows).containsExactly(
       listOf(Ground, Ground, Ground, Ground, Ground),
       listOf(Ground, Start, Horizontal, SWNinety, Ground),
       listOf(Ground, Vertical, Ground, Vertical, Ground),
@@ -31,8 +30,8 @@ class Day10SolutionTest {
     )
 
     val resourceName = "day10/p1_sample_2.txt"
-    val grid = Part1.parseResource(resourceName)
-    assertThat(grid.rows).containsExactly(
+    val layout = Part1.parseResource(resourceName)
+    assertThat(layout.tiles.rows).containsExactly(
       listOf(Horizontal, NENinety, Vertical, SENinety, SWNinety),
       listOf(SWNinety, Start, Horizontal, SWNinety, Vertical),
       listOf(NENinety, Vertical, SWNinety, Vertical, Vertical),
@@ -42,21 +41,35 @@ class Day10SolutionTest {
   }
 
   @Test
-  @Disabled("TODO")
-  fun `p1 sample`() {
-    val resourceName = "day10/p1_sample.txt"
+  fun `p1 sample 2 filtered`() {
+    val resourceName = "day10/p1_sample_2_filtered.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
-    assertThat(Part1.solve(input)).isComputed(32L)
+    assertThat(Part1.solve(input)).isComputed(4L)
   }
 
   @Test
-  @Disabled("TODO")
+  fun `p1 sample 2`() {
+    val resourceName = "day10/p1_sample_2.txt"
+    val solution = Part1
+    val input = solution.parseResource(resourceName)
+    assertThat(Part1.solve(input)).isComputed(4L)
+  }
+
+  @Test
+  fun `p1 sample 3`() {
+    val resourceName = "day10/p1_sample_3.txt"
+    val solution = Part1
+    val input = solution.parseResource(resourceName)
+    assertThat(Part1.solve(input)).isComputed(8L)
+  }
+
+  @Test
   fun `p1`() {
     val resourceName = "day10/p1_input.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
-    assertThat(Part1.solve(input)).isComputed(32L)
+    assertThat(Part1.solve(input)).isComputed(6806L)
 
     Benchmark.run(
       inputContent = loadText(resourceName),

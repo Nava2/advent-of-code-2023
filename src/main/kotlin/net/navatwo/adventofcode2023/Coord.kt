@@ -11,6 +11,16 @@ data class Coord(val x: Int, val y: Int) {
       }
     }
   }
+
+  fun up(distance: Int = 1): Coord = copy(y = y - distance)
+  fun down(distance: Int = 1): Coord = copy(y = y + distance)
+  fun left(distance: Int = 1): Coord = copy(x = x - distance)
+  fun right(distance: Int = 1): Coord = copy(x = x + distance)
+
+  fun upLeft(distance: Int = 1): Coord = copy(x = x - distance, y = y - distance)
+  fun upRight(distance: Int = 1): Coord = copy(x = x + distance, y = y - distance)
+  fun downLeft(distance: Int = 1): Coord = copy(x = x - distance, y = y + distance)
+  fun downRight(distance: Int = 1): Coord = copy(x = x + distance, y = y + distance)
 }
 
 fun <T> List<List<T>>.getCoord(x: Int, y: Int): T? {
@@ -40,7 +50,16 @@ operator fun Array<IntArray>.get(coord: Coord): Int {
   return this[coord.y][coord.x]
 }
 
+operator fun Array<LongArray>.get(coord: Coord): Long {
+  return this[coord.y][coord.x]
+}
+
 fun Array<BooleanArray>.getOrNull(coord: Coord): Boolean? {
+  val row = getOrNull(coord.y)
+  return row?.getOrNull(coord.x)
+}
+
+fun Array<LongArray>.getOrNull(coord: Coord): Long? {
   val row = getOrNull(coord.y)
   return row?.getOrNull(coord.x)
 }
