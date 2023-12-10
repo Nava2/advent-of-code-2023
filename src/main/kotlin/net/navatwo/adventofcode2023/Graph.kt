@@ -1,13 +1,15 @@
 package net.navatwo.adventofcode2023
 
 class Graph<ID : Any> private constructor(
-  private val nodes: Map<ID, List<ID>>,
+  private val nodes: Map<ID, Collection<ID>>,
 ) {
-  operator fun get(identifier: ID): List<ID> {
+  val keys: Set<ID> = nodes.keys
+
+  operator fun get(identifier: ID): Collection<ID> {
     return getOrNull(identifier) ?: error("No node with identifier $identifier")
   }
 
-  fun getOrNull(identifier: ID): List<ID>? {
+  fun getOrNull(identifier: ID): Collection<ID>? {
     return nodes[identifier]
   }
 
@@ -70,7 +72,7 @@ class Graph<ID : Any> private constructor(
       nodes: Iterable<ID>,
       getConnectedNodes: (identifier: ID) -> Collection<ID>,
     ): Graph<ID> {
-      val graph = mutableMapOf<ID, List<ID>>()
+      val graph = mutableMapOf<ID, Collection<ID>>()
 
       val queue = ArrayDeque<ID>()
       queue.addAll(nodes)
@@ -81,7 +83,7 @@ class Graph<ID : Any> private constructor(
 
         val connectedNodes = getConnectedNodes(current)
 
-        graph[current] = connectedNodes.toList()
+        graph[current] = connectedNodes
 
         queue.addAll(connectedNodes)
       }
@@ -91,10 +93,10 @@ class Graph<ID : Any> private constructor(
   }
 }
 
-operator fun Graph<Coord>.get(x: Int, y: Int): List<Coord> {
+operator fun Graph<Coord>.get(x: Int, y: Int): Collection<Coord> {
   return get(Coord(x, y))
 }
 
-fun Graph<Coord>.getOrNull(x: Int, y: Int): List<Coord>? {
+fun Graph<Coord>.getOrNull(x: Int, y: Int): Collection<Coord>? {
   return getOrNull(Coord(x, y))
 }
