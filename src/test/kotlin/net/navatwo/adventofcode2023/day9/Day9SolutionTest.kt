@@ -6,7 +6,6 @@ import net.navatwo.adventofcode2023.isComputed
 import net.navatwo.adventofcode2023.loadText
 import net.navatwo.adventofcode2023.parseResource
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
 class Day9SolutionTest {
@@ -31,21 +30,19 @@ class Day9SolutionTest {
   }
 
   @Test
-  @Disabled("TODO")
   fun `p1 sample`() {
     val resourceName = "day9/p1_sample.txt"
     val solution = Day9Solution.Part1
     val input = solution.parseResource(resourceName)
-    assertThat(Day9Solution.Part1.solve(input)).isComputed(32L)
+    assertThat(Day9Solution.Part1.solve(input)).isComputed(114L)
   }
 
   @Test
-  @Disabled("TODO")
   fun `p1`() {
     val resourceName = "day9/p1_input.txt"
     val solution = Day9Solution.Part1
     val input = solution.parseResource(resourceName)
-    assertThat(Day9Solution.Part1.solve(input)).isComputed(32L)
+    assertThat(Day9Solution.Part1.solve(input)).isComputed(1757008019L)
 
     Benchmark.run(
       inputContent = loadText(resourceName),
