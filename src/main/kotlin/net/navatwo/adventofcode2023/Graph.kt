@@ -11,6 +11,42 @@ class Graph<ID : Any> private constructor(
     return nodes[identifier]
   }
 
+  inline fun dfs(start: ID, visit: (ID) -> Unit) {
+    val visited = mutableSetOf<ID>()
+    val stack = ArrayDeque<ID>()
+    stack.add(start)
+
+    while (stack.isNotEmpty()) {
+      val current = stack.removeLast()
+      if (!visited.add(current)) continue
+
+      visit(current)
+
+      val neighbours = getOrNull(current) ?: listOf()
+      for (neighbour in neighbours) {
+        stack.add(neighbour)
+      }
+    }
+  }
+
+  inline fun bfs(start: ID, visit: (ID) -> Unit) {
+    val visited = mutableSetOf<ID>()
+    val queue = ArrayDeque<ID>()
+    queue.add(start)
+
+    while (queue.isNotEmpty()) {
+      val current = queue.removeFirst()
+      if (!visited.add(current)) continue
+
+      visit(current)
+
+      val neighbours = getOrNull(current) ?: listOf()
+      for (neighbour in neighbours) {
+        queue.addLast(neighbour)
+      }
+    }
+  }
+
   override fun toString(): String {
     return buildString {
       append("Graph(\n")

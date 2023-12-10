@@ -74,6 +74,7 @@ class Day10SolutionTest {
     Benchmark.run(
       inputContent = loadText(resourceName),
       solution = solution,
+      inputConfig = Benchmark.Stage.INPUT.config(warmupIterations = 1000U, iterations = 2_000U),
     )
   }
 

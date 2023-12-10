@@ -86,6 +86,26 @@ value class BooleanGrid(private val grid: Array<BooleanArray>) : GridOperations<
   override operator fun set(x: Int, y: Int, value: Boolean) {
     grid[y][x] = value
   }
+
+  companion object {
+    inline fun create(rows: Int, columns: Int, init: (x: Int, y: Int) -> Boolean): BooleanGrid {
+      return BooleanGrid(
+        Array(rows) { y ->
+          BooleanArray(columns) { x ->
+            init(x, y)
+          }
+        },
+      )
+    }
+
+    fun create(rows: Int, columns: Int, defaultValue: Boolean): BooleanGrid {
+      return create(rows, columns) { _, _ -> defaultValue }
+    }
+
+    fun maskFor(grid: GridOperations<*>, defaultValue: Boolean): BooleanGrid {
+      return create(grid.rowCount, grid.columnCount) { _, _ -> defaultValue }
+    }
+  }
 }
 
 @JvmInline

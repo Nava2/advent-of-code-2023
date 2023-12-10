@@ -24,16 +24,7 @@ sealed class Day10Solution : Solution<Day10Solution.PipeLayout> {
       queue.add(startNode)
 
       var maxDistance = 0L
-
-      // BFS: Starting at startNode, visit each neighbour from graph and add it to the queue, storing the
-      // distance travelled from start in solveGrid
-      while (queue.isNotEmpty()) {
-        val current = queue.removeFirst()
-        val currentDistance = solveGrid[current]
-        if (currentDistance != UNVISITED_VALUE) {
-          continue
-        }
-
+      graph.bfs(startNode) { current ->
         var newDistance = 0L
 
         for (neighbour in graph[current]) {
