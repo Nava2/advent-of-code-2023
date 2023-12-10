@@ -15,6 +15,8 @@ interface GridOperations<T> {
 
   operator fun set(x: Int, y: Int, value: T)
 
+  operator fun contains(coord: Coord): Boolean = getOrNull(coord) != null
+
   override fun toString(): String
 }
 
@@ -33,6 +35,12 @@ fun GridOperations<*>.coords(): Sequence<Coord> {
     }
   }
 }
+
+val GridOperations<*>.columnIndices: IntRange
+  get() = 0 until columnCount
+
+val GridOperations<*>.rowIndices: IntRange
+  get() = 0 until rowCount
 
 data class Grid<T>(private val grid: MutableList<MutableList<T>>) : GridOperations<T> {
   val rows: List<List<T>> get() = grid
@@ -64,6 +72,19 @@ data class Grid<T>(private val grid: MutableList<MutableList<T>>) : GridOperatio
       }
     }
   }
+
+  companion object {
+
+    inline fun <T> create(rows: Int, columns: Int, init: (x: Int, y: Int) -> T): Grid<T> {
+      return Grid(
+        MutableList(rows) { y ->
+          MutableList(columns) { x ->
+            init(x, y)
+          }
+        },
+      )
+    }
+  }
 }
 
 @JvmInline
@@ -87,6 +108,17 @@ value class BooleanGrid(private val grid: Array<BooleanArray>) : GridOperations<
     grid[y][x] = value
   }
 
+  override fun toString(): String {
+    return buildString {
+      for (row in rows) {
+        for (cell in row) {
+          append(if (cell) '+' else '.')
+        }
+        append('\n')
+      }
+    }
+  }
+
   companion object {
     inline fun create(rows: Int, columns: Int, init: (x: Int, y: Int) -> Boolean): BooleanGrid {
       return BooleanGrid(
@@ -104,6 +136,26 @@ value class BooleanGrid(private val grid: Array<BooleanArray>) : GridOperations<
 
     fun maskFor(grid: GridOperations<*>, defaultValue: Boolean): BooleanGrid {
       return create(grid.rowCount, grid.columnCount) { _, _ -> defaultValue }
+    }
+
+    inline fun maskFor(grid: GridOperations<*>, init: (x: Int, y: Int) -> Boolean): BooleanGrid {
+      return create(grid.rowCount, grid.columnCount, init)
+    }
+
+    fun parse(input: String, trueValue: Char = '+', falseValue: Char = '.'): BooleanGrid {
+      require(input.isNotBlank())
+
+      val lines = input.lineSequence().filter { it.isNotBlank() }.toList()
+
+      val grid = create(lines.size, lines.first().length) { x, y ->
+        when (val char = lines[y][x]) {
+          trueValue -> true
+          falseValue -> false
+          else -> error("Unexpected char '$char' at ($x, $y)")
+        }
+      }
+
+      return grid
     }
   }
 }

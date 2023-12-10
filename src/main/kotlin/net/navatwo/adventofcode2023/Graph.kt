@@ -90,3 +90,11 @@ class Graph<ID : Any> private constructor(
     }
   }
 }
+
+operator fun Graph<Coord>.get(x: Int, y: Int): List<Coord> {
+  return get(Coord(x, y))
+}
+
+fun Graph<Coord>.getOrNull(x: Int, y: Int): List<Coord>? {
+  return getOrNull(Coord(x, y))
+}
