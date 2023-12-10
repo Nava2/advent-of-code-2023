@@ -50,24 +50,24 @@ class Day9SolutionTest {
     )
   }
 
-//  @Test
-//  fun `p2 sample`() {
-//    val resourceName = "day9/p1_sample.txt"
-//    val solution = Day9Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day9Solution.Part2.solve(input)).isComputed(46)
-//  }
-//
-//  @Test
-//  fun `p2`() {
-//    val resourceName = "day9/p1_input.txt"
-//    val solution = Day9Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(Day9Solution.Part2.solve(input)).isComputed(5132675L)
-//
-//    Benchmark.run(
-//      inputContent = loadText(resourceName),
-//      solution = solution,
-//    )
-//  }
+  @Test
+  fun `p2 sample`() {
+    val resourceName = "day9/p1_sample.txt"
+    val solution = Day9Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day9Solution.Part2.solve(input)).isComputed(2)
+  }
+
+  @Test
+  fun `p2`() {
+    val resourceName = "day9/p1_input.txt"
+    val solution = Day9Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day9Solution.Part2.solve(input)).isComputed(995L)
+
+    Benchmark.run(
+      inputContent = loadText(resourceName),
+      solution = solution,
+    )
+  }
 }

@@ -7,31 +7,66 @@ sealed class Day9Solution : Solution<List<Day9Solution.History>> {
   data object Part1 : Day9Solution() {
     override fun solve(input: List<History>): ComputedResult {
       val predictions = input.map { history ->
-        var rowHistory = history.values.map { it.value }
+        val rowHistory = history.values.map { it.value }
 
         val lastElementStack = ArrayDeque<Long>()
 
-        var constDiff: Long? = null
-        do {
-          // compute the differences between each value and its next
-          val differences = rowHistory.zipWithNext { a, b -> b - a }
-
-          lastElementStack.addLast(rowHistory.last())
-          rowHistory = differences
-
-          val differenceCandidate = differences.first()
-          if (differences.all { it == differenceCandidate }) {
-            // if all differences are the same, we have found the linear regression
-            // and can compute the next value
-            constDiff = differenceCandidate
-          }
-        } while (rowHistory.isNotEmpty() && constDiff == null)
+        val constDiff = computeLinearRegression(rowHistory, lastElementStack = lastElementStack)
 
         // Iterate the stack of last elements and walk back up adding the prediction to the previous one
-        var prediction = constDiff!!
+        var prediction = constDiff
         while (lastElementStack.isNotEmpty()) {
           val lastElement = lastElementStack.removeLast()
           prediction += lastElement
+        }
+
+        prediction
+      }
+
+      return ComputedResult.Simple(predictions.reduce(Long::plus))
+    }
+  }
+
+  protected fun computeLinearRegression(
+    initialHistory: List<Long>,
+    firstElementStack: ArrayDeque<Long>? = null,
+    lastElementStack: ArrayDeque<Long>? = null,
+  ): Long {
+    var history = initialHistory
+    var constDiff: Long? = null
+
+    do {
+      // compute the differences between each value and its next
+      val differences = history.zipWithNext { a, b -> b - a }
+
+      firstElementStack?.addLast(history.first())
+      lastElementStack?.addLast(history.last())
+
+      history = differences
+
+      val differenceCandidate = differences.first()
+      if (differences.all { it == differenceCandidate }) {
+        // if all differences are the same, we have found the linear regression
+        // and can compute the next value
+        constDiff = differenceCandidate
+      }
+    } while (constDiff == null)
+
+    return constDiff
+  }
+
+  data object Part2 : Day9Solution() {
+    override fun solve(input: List<History>): ComputedResult {
+      val predictions = input.map { history ->
+        val firstElementStack = ArrayDeque<Long>()
+
+        val constDiff = computeLinearRegression(history.values.map { it.value }, firstElementStack = firstElementStack)
+
+        // Iterate the stack of last elements and walk back up adding the prediction to the previous one
+        var prediction = constDiff
+        while (firstElementStack.isNotEmpty()) {
+          val lastElement = firstElementStack.removeLast()
+          prediction = lastElement - prediction
         }
 
         prediction
