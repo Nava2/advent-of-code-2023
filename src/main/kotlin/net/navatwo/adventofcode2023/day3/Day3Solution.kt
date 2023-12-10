@@ -2,6 +2,7 @@ package net.navatwo.adventofcode2023.day3
 
 import net.navatwo.adventofcode2023.Coord
 import net.navatwo.adventofcode2023.Grid
+import net.navatwo.adventofcode2023.forEachCoord
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
 

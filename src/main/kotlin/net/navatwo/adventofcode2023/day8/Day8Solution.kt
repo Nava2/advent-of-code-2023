@@ -6,23 +6,23 @@ import net.navatwo.adventofcode2023.framework.Solution
 sealed class Day8Solution : Solution<Day8Solution.Input> {
   data object Part1 : Day8Solution() {
     override fun solve(input: Input): ComputedResult {
-      val graph = Graph.create(input.nodes)
+      val tree = Tree.create(input.nodes)
 
       val initialNodeName = NodeName("AAA")
 
-      val result = computeDistanceToEnd(graph, initialNodeName, input) { it == NodeName("ZZZ") }
+      val result = computeDistanceToEnd(tree, initialNodeName, input) { it == NodeName("ZZZ") }
 
       return ComputedResult.Simple(result)
     }
   }
 
   protected fun computeDistanceToEnd(
-    graph: Graph,
+    tree: Tree,
     initialNodeName: NodeName,
     input: Input,
     isEndNode: (NodeName) -> Boolean,
   ): Long {
-    var currentNode = graph.nodes.getValue(initialNodeName)
+    var currentNode = tree[initialNodeName]
 
     val directionsIterator = input.directionsIterator()
 
@@ -40,15 +40,15 @@ sealed class Day8Solution : Solution<Day8Solution.Input> {
 
   data object Part2 : Day8Solution() {
     override fun solve(input: Input): ComputedResult {
-      val graph = Graph.create(input.nodes)
+      val tree = Tree.create(input.nodes)
 
-      val currentNodes = graph.nodes.keys.asSequence()
+      val currentNodes = tree.keys.asSequence()
         .filter { it.name.last() == 'A' }
-        .map { graph.nodes.getValue(it) }
+        .map { tree[it] }
         .toList()
 
       val distanceToFirst = currentNodes.associateWith { node ->
-        computeDistanceToEnd(graph, node.name, input) { it.name.last() == 'Z' }
+        computeDistanceToEnd(tree, node.name, input) { it.name.last() == 'Z' }
       }
 
       /**
@@ -83,12 +83,16 @@ sealed class Day8Solution : Solution<Day8Solution.Input> {
     }
   }
 
-  data class Graph private constructor(
-    val nodes: Map<NodeName, Node>,
+  data class Tree private constructor(
+    private val nodes: Map<NodeName, Node>,
   ) {
+    val keys = nodes.keys
+
+    operator fun get(name: NodeName): Node = nodes.getValue(name)
+
     companion object {
-      fun create(nodes: Map<NodeName, NodeData>): Graph {
-        val graph = mutableMapOf<NodeName, Node>()
+      fun create(nodes: Map<NodeName, NodeData>): Tree {
+        val tree = mutableMapOf<NodeName, Node>()
 
         fun getOrCreate(graph: MutableMap<NodeName, Node>, data: NodeData): Node {
           val existing = graph[data.name]
@@ -105,10 +109,10 @@ sealed class Day8Solution : Solution<Day8Solution.Input> {
         }
 
         for (node in nodes.values) {
-          getOrCreate(graph, node)
+          getOrCreate(tree, node)
         }
 
-        return Graph(graph)
+        return Tree(tree)
       }
     }
   }
