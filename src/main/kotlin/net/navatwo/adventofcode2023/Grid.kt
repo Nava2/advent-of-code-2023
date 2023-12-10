@@ -1,10 +1,9 @@
 package net.navatwo.adventofcode2023
 
-@JvmInline
-value class Grid<T>(private val grid: MutableList<MutableList<T>>) {
+data class Grid<T>(private val grid: MutableList<MutableList<T>>) {
   val rows: List<List<T>> get() = grid
 
-  val rowCount get() = grid.size
+  val rowCount = grid.size
 
   operator fun get(coord: Coord): T = grid[coord]
   operator fun get(x: Int, y: Int): T = grid[y][x]
@@ -25,6 +24,17 @@ value class Grid<T>(private val grid: MutableList<MutableList<T>>) {
     for (y in rows.indices) {
       for (x in rows[y].indices) {
         block(x, y)
+      }
+    }
+  }
+
+  override fun toString(): String {
+    return buildString {
+      for (row in rows) {
+        for (cell in row) {
+          append(cell)
+        }
+        append('\n')
       }
     }
   }

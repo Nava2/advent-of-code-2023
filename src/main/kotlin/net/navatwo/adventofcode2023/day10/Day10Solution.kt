@@ -22,19 +22,18 @@ sealed class Day10Solution : Solution<Grid<Day10Solution.Tile>> {
     return Grid(tiles)
   }
 
-  @JvmInline
-  value class Input(val value: String)
-
-  enum class Tile(val char: Char) {
-    Vertical('|'),
-    Horizontal('-'),
-    NENinety('L'),
-    NWNinety('J'),
-    SWNinety('7'),
-    SENinety('F'),
-    Ground('.'),
-    Start('S'),
+  enum class Tile(val char: Char, private val visualChar: Char) {
+    Vertical('|', '|'),
+    Horizontal('-', '─'),
+    NENinety('L', '└'),
+    NWNinety('J', '┘'),
+    SWNinety('7', '┐'),
+    SENinety('F', '┌'),
+    Ground('.', ' '),
+    Start('S', 'S'),
     ;
+
+    override fun toString(): String = visualChar.toString()
 
     companion object {
       private val charToTile = entries.associateBy { it.char }
