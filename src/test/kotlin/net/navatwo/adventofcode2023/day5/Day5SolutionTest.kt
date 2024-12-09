@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class Day5SolutionTest {
   @Test
   fun `p1 parse`() {
-    val resourceName = "day5/p1_sample.txt"
+    val resourceName = "2023/day5/p1_sample.txt"
     val solution = Day5Solution.Part1
     val almanac = solution.parseResource(resourceName)
     assertThat(almanac.seeds).containsExactly(
@@ -118,7 +118,7 @@ class Day5SolutionTest {
 
   @Test
   fun `p1 sample`() {
-    val resourceName = "day5/p1_sample.txt"
+    val resourceName = "2023/day5/p1_sample.txt"
     val solution = Day5Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day5Solution.Part1.solve(input)).isComputed(35L)
@@ -126,7 +126,7 @@ class Day5SolutionTest {
 
   @Test
   fun `p1`() {
-    val resourceName = "day5/p1_input.txt"
+    val resourceName = "2023/day5/p1_input.txt"
     val solution = Day5Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day5Solution.Part1.solve(input)).isComputed(165788812L)
@@ -139,7 +139,7 @@ class Day5SolutionTest {
 
   @Test
   fun `p2 sample`() {
-    val resourceName = "day5/p1_sample.txt"
+    val resourceName = "2023/day5/p1_sample.txt"
     val solution = Day5Solution.Part2
     val input = solution.parseResource(resourceName)
     assertThat(Day5Solution.Part2.solve(input)).isComputed(46)
@@ -147,7 +147,7 @@ class Day5SolutionTest {
 
   @Test
   fun `p2`() {
-    val resourceName = "day5/p1_input.txt"
+    val resourceName = "2023/day5/p1_input.txt"
     val solution = Day5Solution.Part2
     val input = solution.parseResource(resourceName)
     assertThat(Day5Solution.Part2.solve(input)).isComputed(5132675L)

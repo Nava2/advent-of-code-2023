@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test
 class Day10SolutionTest {
   @Test
   fun `p1 parse`() {
-    val filteredResourceName = "day10/p1_sample_2_filtered.txt"
+    val filteredResourceName = "2023/day10/p1_sample_2_filtered.txt"
     val filteredLayout = Part1.parseResource(filteredResourceName)
     assertThat(filteredLayout.tiles.rows).containsExactly(
       listOf(Ground, Ground, Ground, Ground, Ground),
@@ -33,7 +33,7 @@ class Day10SolutionTest {
       listOf(Ground, Ground, Ground, Ground, Ground),
     )
 
-    val resourceName = "day10/p1_sample_2.txt"
+    val resourceName = "2023/day10/p1_sample_2.txt"
     val layout = Part1.parseResource(resourceName)
     assertThat(layout.tiles.rows).containsExactly(
       listOf(Horizontal, NENinety, Vertical, SENinety, SWNinety),
@@ -46,7 +46,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p1 sample 2 filtered`() {
-    val resourceName = "day10/p1_sample_2_filtered.txt"
+    val resourceName = "2023/day10/p1_sample_2_filtered.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
     assertThat(Part1.solve(input)).isComputed(4L)
@@ -54,7 +54,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p1 sample 2`() {
-    val resourceName = "day10/p1_sample_2.txt"
+    val resourceName = "2023/day10/p1_sample_2.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
     assertThat(Part1.solve(input)).isComputed(4L)
@@ -62,7 +62,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p1 sample 3`() {
-    val resourceName = "day10/p1_sample_3.txt"
+    val resourceName = "2023/day10/p1_sample_3.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
     assertThat(Part1.solve(input)).isComputed(8L)
@@ -70,7 +70,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p1`() {
-    val resourceName = "day10/p1_input.txt"
+    val resourceName = "2023/day10/p1_input.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
     assertThat(Part1.solve(input)).isComputed(6806L)
@@ -174,7 +174,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p2 sample`() {
-    val resourceName = "day10/p2_sample_1.txt"
+    val resourceName = "2023/day10/p2_sample_1.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
     assertThat(Part2.solve(input)).isComputed(4)
@@ -182,7 +182,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p2 sample 2`() {
-    val resourceName = "day10/p2_sample_2.txt"
+    val resourceName = "2023/day10/p2_sample_2.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
     assertThat(Part2.solve(input)).isComputed(8)
@@ -190,7 +190,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p2 sample 3`() {
-    val resourceName = "day10/p2_sample_3.txt"
+    val resourceName = "2023/day10/p2_sample_3.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
     assertThat(Part2.solve(input)).isComputed(10)
@@ -198,7 +198,7 @@ class Day10SolutionTest {
 
   @Test
   fun `p2`() {
-    val resourceName = "day10/p1_input.txt"
+    val resourceName = "2023/day10/p1_input.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
     assertThat(Part2.solve(input)).isComputed(449L)

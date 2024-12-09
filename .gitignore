@@ -2,8 +2,11 @@ build/
 .gradle/
 !.gradle/gradle-wrapper.jar
 
+.idea/*.iml
+
 # Compiled class file
 *.class
+.kotlin/
 
 # Log file
 *.log

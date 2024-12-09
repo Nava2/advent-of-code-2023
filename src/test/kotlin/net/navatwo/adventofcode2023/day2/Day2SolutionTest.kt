@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test
 class Day2SolutionTest {
   @Test
   fun `p1 parse`() {
-    val resourceName = "day2/p1_sample.txt"
+    val resourceName = "2023/day2/p1_sample.txt"
     val solution = Day2Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(input).hasSize(5)
@@ -40,7 +40,7 @@ class Day2SolutionTest {
 
   @Test
   fun `p1 sample`() {
-    val resourceName = "day2/p1_sample.txt"
+    val resourceName = "2023/day2/p1_sample.txt"
     val solution = Day2Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day2Solution.Part1.solve(input)).isComputed(8)
@@ -48,7 +48,7 @@ class Day2SolutionTest {
 
   @Test
   fun `p1`() {
-    val resourceName = "day2/p1_input.txt"
+    val resourceName = "2023/day2/p1_input.txt"
     val solution = Day2Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day2Solution.Part1.solve(input)).isComputed(2447)
@@ -61,7 +61,7 @@ class Day2SolutionTest {
 
   @Test
   fun `p2 sample`() {
-    val resourceName = "day2/p1_sample.txt"
+    val resourceName = "2023/day2/p1_sample.txt"
     val solution = Day2Solution.Part2
     val input = solution.parseResource(resourceName)
     assertThat(Day2Solution.Part2.solve(input)).isComputed(2286)
@@ -69,7 +69,7 @@ class Day2SolutionTest {
 
   @Test
   fun `p2`() {
-    val resourceName = "day2/p1_input.txt"
+    val resourceName = "2023/day2/p1_input.txt"
     val solution = Day2Solution.Part2
     val input = solution.parseResource(resourceName)
     assertThat(Day2Solution.Part2.solve(input)).isComputed(56322L)
