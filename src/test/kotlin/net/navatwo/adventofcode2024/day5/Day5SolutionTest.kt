@@ -44,9 +44,10 @@ class Day5SolutionTest {
     val input = solution.parseResource(resourceName)
     assertThat(Day5Solution.Part2.solve(input)).isComputed(6767L)
 
-    Benchmark.run(
-      inputContent = loadText(resourceName),
-      solution = solution,
-    )
+    // Too slow :(
+//    Benchmark.run(
+//      inputContent = loadText(resourceName),
+//      solution = solution,
+//    )
   }
 }

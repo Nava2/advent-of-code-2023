@@ -28,6 +28,7 @@ sealed class Day5Solution : Solution<Day5Solution.Input> {
 
   data object Part2 : Day5Solution() {
     override fun solve(input: Input): ComputedResult {
+      // pageOrdering[pageN] = set of pages that must come before pageN
       val pageOrdering = input.computeOrderingMap()
 
       val orderedUpdates = input.manualUpdates.asSequence()
@@ -65,9 +66,6 @@ sealed class Day5Solution : Solution<Day5Solution.Input> {
             ordered[ordered.size / 2]
           }
         }
-
-      // pageOrdering[pageN] = set of pages that must come before pageN
-
 
       return ComputedResult.Simple(orderedUpdates.sum())
     }
