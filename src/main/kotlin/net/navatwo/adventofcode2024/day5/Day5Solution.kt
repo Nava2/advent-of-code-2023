@@ -2,8 +2,6 @@ package net.navatwo.adventofcode2024.day5
 
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
-import net.navatwo.adventofcode2024.day5.Day5Solution.Part2.computeOrderingMap
-import java.util.stream.Collectors.toSet
 
 sealed class Day5Solution : Solution<Day5Solution.Input> {
   data object Part1 : Day5Solution() {
@@ -76,7 +74,6 @@ sealed class Day5Solution : Solution<Day5Solution.Input> {
       acc.computeIfAbsent(ordering.pageY) { mutableSetOf() }.add(ordering.pageX)
       acc
     }
-      .mapValues { (_, v) -> v.toSortedSet() }
   }
 
   override fun parse(lines: Sequence<String>): Input {
