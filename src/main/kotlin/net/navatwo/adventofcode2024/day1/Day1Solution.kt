@@ -18,6 +18,21 @@ sealed class Day1Solution : Solution<Day1Solution.Input> {
     }
   }
 
+  data object Part2 : Day1Solution() {
+    override fun solve(input: Input): ComputedResult {
+      val rightCounts = input.right.fold(mutableMapOf<Long, Long>()) { acc, v ->
+        acc.compute(v) { _, prev -> (prev ?: 0) + 1 }
+        acc
+      }
+
+      val similarityScore = input.left.sumOf { l ->
+        l * rightCounts.getOrDefault(l, 0)
+      }
+
+      return ComputedResult.Simple(similarityScore)
+    }
+  }
+
   override fun parse(lines: Sequence<String>): Input {
     val left = mutableListOf<Long>()
     val right = mutableListOf<Long>()
