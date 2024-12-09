@@ -29,24 +29,24 @@ class Day5SolutionTest {
     )
   }
 
-//  @Test
-//  fun `p2 sample`() {
-//    val resourceName = "2024/day5/p2_sample.txt"
-//    val solution = day5Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(day5Solution.Part2.solve(input)).isComputed(281)
-//  }
-//
-//  @Test
-//  fun `p2`() {
-//    val resourceName = "2024/day5/p1_input.txt"
-//    val solution = day5Solution.Part2
-//    val input = solution.parseResource(resourceName)
-//    assertThat(day5Solution.Part2.solve(input)).isComputed(55093L)
-//
-//    Benchmark.run(
-//      inputContent = loadText(resourceName),
-//      solution = solution,
-//    )
-//  }
+  @Test
+  fun `p2 sample`() {
+    val resourceName = "2024/day5/p1_sample.txt"
+    val solution = Day5Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day5Solution.Part2.solve(input)).isComputed(123)
+  }
+
+  @Test
+  fun `p2`() {
+    val resourceName = "2024/day5/p1_input.txt"
+    val solution = Day5Solution.Part2
+    val input = solution.parseResource(resourceName)
+    assertThat(Day5Solution.Part2.solve(input)).isComputed(6767L)
+
+    Benchmark.run(
+      inputContent = loadText(resourceName),
+      solution = solution,
+    )
+  }
 }

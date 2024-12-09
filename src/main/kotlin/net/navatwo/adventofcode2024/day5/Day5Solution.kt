@@ -2,14 +2,13 @@ package net.navatwo.adventofcode2024.day5
 
 import net.navatwo.adventofcode2023.framework.ComputedResult
 import net.navatwo.adventofcode2023.framework.Solution
+import net.navatwo.adventofcode2024.day5.Day5Solution.Part2.computeOrderingMap
+import java.util.stream.Collectors.toSet
 
 sealed class Day5Solution : Solution<Day5Solution.Input> {
   data object Part1 : Day5Solution() {
     override fun solve(input: Input): ComputedResult {
-      val pageOrdering = input.orderRules.fold(mutableMapOf<Long, MutableSet<Long>>()) { acc, ordering ->
-        acc.computeIfAbsent(ordering.pageY) { mutableSetOf() }.add(ordering.pageX)
-        acc
-      }
+      val pageOrdering = input.computeOrderingMap()
 
       // pageOrdering[pageN] = set of pages that must come before pageN
       val orderedUpdates = input.manualUpdates.asSequence()
@@ -25,6 +24,61 @@ sealed class Day5Solution : Solution<Day5Solution.Input> {
 
       return ComputedResult.Simple(orderedUpdates.sum())
     }
+  }
+
+  data object Part2 : Day5Solution() {
+    override fun solve(input: Input): ComputedResult {
+      val pageOrdering = input.computeOrderingMap()
+
+      val orderedUpdates = input.manualUpdates.asSequence()
+        .map { update ->
+          val allowedPages = update.pageUpdates.toSet()
+
+          val previousPages = mutableMapOf<Long, Set<Long>>()
+          fun computePrevious(pageN: Long): Set<Long> {
+            val existing = previousPages[pageN]
+            if (existing != null) return existing
+
+            val predecessors = pageOrdering[pageN]?.intersect(allowedPages)
+            if (predecessors == null) {
+              previousPages[pageN] = setOf()
+              return setOf()
+            }
+
+            return (predecessors + predecessors.flatMap { computePrevious(it) })
+              .also { previousPages[pageN] = it }
+          }
+
+          val ordered = update.pageUpdates.sortedWith { a, b ->
+            if (a == b) {
+              0
+            } else if (b in computePrevious(a)) {
+              1
+            } else {
+              -1
+            }
+          }
+
+          if (ordered == update.pageUpdates) {
+            0
+          } else {
+            ordered[ordered.size / 2]
+          }
+        }
+
+      // pageOrdering[pageN] = set of pages that must come before pageN
+
+
+      return ComputedResult.Simple(orderedUpdates.sum())
+    }
+  }
+
+  protected fun Input.computeOrderingMap(): Map<Long, Set<Long>> {
+    return orderRules.fold(mutableMapOf<Long, MutableSet<Long>>()) { acc, ordering ->
+      acc.computeIfAbsent(ordering.pageY) { mutableSetOf() }.add(ordering.pageX)
+      acc
+    }
+      .mapValues { (_, v) -> v.toSortedSet() }
   }
 
   override fun parse(lines: Sequence<String>): Input {
