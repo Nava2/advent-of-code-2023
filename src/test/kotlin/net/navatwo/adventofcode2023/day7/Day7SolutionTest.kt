@@ -20,7 +20,7 @@ import org.junit.jupiter.params.provider.MethodSource
 class Day7SolutionTest {
   @Test
   fun `p1 parse`() {
-    val resourceName = "day7/p1_sample.txt"
+    val resourceName = "2023/day7/p1_sample.txt"
     val solution = Part1
     val game = solution.parseResource(resourceName)
     assertThat(game).isEqualTo(
@@ -38,7 +38,7 @@ class Day7SolutionTest {
 
   @Test
   fun `p1 sample`() {
-    val resourceName = "day7/p1_sample.txt"
+    val resourceName = "2023/day7/p1_sample.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
     assertThat(Part1.solve(input)).isComputed(6440L)
@@ -46,7 +46,7 @@ class Day7SolutionTest {
 
   @Test
   fun `p1`() {
-    val resourceName = "day7/p1_input.txt"
+    val resourceName = "2023/day7/p1_input.txt"
     val solution = Part1
     val input = solution.parseResource(resourceName)
     assertThat(Part1.solve(input)).isComputed(250232501L)
@@ -59,7 +59,7 @@ class Day7SolutionTest {
 
   @Test
   fun `p2 sample`() {
-    val resourceName = "day7/p1_sample.txt"
+    val resourceName = "2023/day7/p1_sample.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
     assertThat(Part2.solve(input)).isComputed(5905)
@@ -67,7 +67,7 @@ class Day7SolutionTest {
 
   @Test
   fun `p2`() {
-    val resourceName = "day7/p1_input.txt"
+    val resourceName = "2023/day7/p1_input.txt"
     val solution = Part2
     val input = solution.parseResource(resourceName)
     assertThat(Part2.solve(input)).isComputed(249138943L)

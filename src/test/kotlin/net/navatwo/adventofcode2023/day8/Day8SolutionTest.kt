@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test
 class Day8SolutionTest {
   @Test
   fun `p1 parse sample 1`() {
-    val resourceName = "day8/p1_sample1.txt"
+    val resourceName = "2023/day8/p1_sample1.txt"
     val solution = Day8Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(input).isEqualTo(
@@ -64,7 +64,7 @@ class Day8SolutionTest {
 
   @Test
   fun `p1 parse sample 2`() {
-    val resourceName = "day8/p1_sample2.txt"
+    val resourceName = "2023/day8/p1_sample2.txt"
     val solution = Day8Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(input).isEqualTo(
@@ -93,7 +93,7 @@ class Day8SolutionTest {
 
   @Test
   fun `p1 sample 1`() {
-    val resourceName = "day8/p1_sample1.txt"
+    val resourceName = "2023/day8/p1_sample1.txt"
     val solution = Day8Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day8Solution.Part1.solve(input)).isComputed(2)
@@ -101,7 +101,7 @@ class Day8SolutionTest {
 
   @Test
   fun `p1 sample 2`() {
-    val resourceName = "day8/p1_sample2.txt"
+    val resourceName = "2023/day8/p1_sample2.txt"
     val solution = Day8Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day8Solution.Part1.solve(input)).isComputed(6)
@@ -109,7 +109,7 @@ class Day8SolutionTest {
 
   @Test
   fun `p1`() {
-    val resourceName = "day8/p1_input.txt"
+    val resourceName = "2023/day8/p1_input.txt"
     val solution = Day8Solution.Part1
     val input = solution.parseResource(resourceName)
     assertThat(Day8Solution.Part1.solve(input)).isComputed(19637L)
@@ -122,7 +122,7 @@ class Day8SolutionTest {
 
   @Test
   fun `p2 sample`() {
-    val resourceName = "day8/p2_sample1.txt"
+    val resourceName = "2023/day8/p2_sample1.txt"
     val solution = Day8Solution.Part2
     val input = solution.parseResource(resourceName)
     assertThat(Day8Solution.Part2.solve(input)).isComputed(6)
@@ -130,7 +130,7 @@ class Day8SolutionTest {
 
   @Test
   fun `p2`() {
-    val resourceName = "day8/p1_input.txt"
+    val resourceName = "2023/day8/p1_input.txt"
     val solution = Day8Solution.Part2
     val input = solution.parseResource(resourceName)
     assertThat(Day8Solution.Part2.solve(input)).isComputed(8811050362409L)

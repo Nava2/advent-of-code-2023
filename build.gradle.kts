@@ -1,6 +1,6 @@
 plugins {
-  kotlin("jvm") version "2.0.0-Beta1"
-  id("io.gitlab.arturbosch.detekt") version "1.23.4"
+  kotlin("jvm") version "2.0.20"
+  id("io.gitlab.arturbosch.detekt") version "1.23.7"
 }
 
 group = "net.navatwo"
