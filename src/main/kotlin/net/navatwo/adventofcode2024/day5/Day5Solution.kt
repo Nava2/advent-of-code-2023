@@ -6,7 +6,24 @@ import net.navatwo.adventofcode2023.framework.Solution
 sealed class Day5Solution : Solution<Day5Solution.Input> {
   data object Part1 : Day5Solution() {
     override fun solve(input: Input): ComputedResult {
-      TODO()
+      val pageOrdering = input.orderRules.fold(mutableMapOf<Long, MutableSet<Long>>()) { acc, ordering ->
+        acc.computeIfAbsent(ordering.pageY) { mutableSetOf() }.add(ordering.pageX)
+        acc
+      }
+
+      // pageOrdering[pageN] = set of pages that must come before pageN
+      val orderedUpdates = input.manualUpdates.asSequence()
+        .filter { update ->
+          update.pageUpdates.asSequence().withIndex().all { (idx, pageN) ->
+            val predecessors = pageOrdering.getOrElse(pageN) { setOf() }
+            predecessors.containsAll(update.pageUpdates.subList(0, idx))
+          }
+        }
+        .map { update ->
+          update.pageUpdates[update.pageUpdates.size / 2]
+        }
+
+      return ComputedResult.Simple(orderedUpdates.sum())
     }
   }
 
